@@ -1,0 +1,44 @@
+# Ежедневное обновление курса тенге к рублю по ленте Национального Банка Казахстана.
+name: Курс Нацбанка
+
+on:
+  schedule:
+    - cron: '0 5 * * *'      # каждый день в 05:00 по Гринвичу, это 11:00 в Алматы
+  workflow_dispatch:          # и по нажатию вручную
+
+permissions:
+  contents: write
+
+jobs:
+  обновить:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Взять курс у Нацбанка
+        run: |
+          python3 - <<'PY'
+          import json, re, urllib.request, datetime
+
+          лента = urllib.request.urlopen(
+              'https://nationalbank.kz/rss/rates_all.xml', timeout=30).read().decode('utf-8', 'replace')
+          м = re.search(r'<title>RUB</title>\s*<pubDate>(.*?)</pubDate>\s*<description>([\d.,]+)</description>', лента)
+          if not м:
+              raise SystemExit('курс рубля в ленте не найден')
+          данные = {
+              'валюта': 'RUB',
+              'тенге_за_рубль': float(м.group(2).replace(',', '.')),
+              'дата_нацбанка': м.group(1).strip(),
+              'обновлено': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+          }
+          open('kurs.json', 'w', encoding='utf-8').write(json.dumps(данные, ensure_ascii=False))
+          print(данные)
+          PY
+
+      - name: Записать в репозиторий, если курс изменился
+        run: |
+          git config user.name "Курс Нацбанка"
+          git config user.email "actions@github.com"
+          git add kurs.json
+          git diff --staged --quiet || git commit -m "курс на $(date +%d.%m.%Y)"
+          git push
