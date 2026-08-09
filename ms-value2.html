@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mastakey STOCK — ценность для автоцентра</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Unbounded:wght@400;600;700;800&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1419;
+    --muted: #6b7580;
+    --line: #d8dde2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Google Sans', 'Product Sans', Roboto, Arial, sans-serif;
+    color: var(--ink);
+    background: #ffffff;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+  h1, h3, p, a, button { overflow-wrap: break-word; }
+  svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ——— крючок ——— */
+  .brand { font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+  h1 {
+    font-family: 'Unbounded', 'Google Sans', Arial, sans-serif;
+    font-size: clamp(29px, 5.4vw, 44px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 18px 0 16px;
+    text-wrap: balance;
+  }
+  .lead {
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--muted);
+    line-height: 1.5;
+    max-width: 62ch;
+  }
+
+  /* ——— кнопки разделов: различаются заливкой, нажатая — плотнее ——— */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 36px;
+  }
+  .tab {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    background: var(--pale);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  }
+  .tab:hover { border-color: var(--c); }
+  .tab.on {
+    background: var(--soft);
+    border-color: var(--c);
+    box-shadow: inset 0 0 0 1px var(--c), inset 0 2px 4px rgba(15, 20, 25, 0.13);
+  }
+
+  /* ——— раздел: показан только выбранный ——— */
+  .block { display: none; margin-top: 26px; }
+  .block.on { display: block; }
+
+  /* ——— карточка раздела: без рамки, лёгкая заливка, тень ——— */
+  .deck {
+    background: var(--pale);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(15, 20, 25, 0.10), 0 1px 2px rgba(15, 20, 25, 0.06);
+    overflow: hidden;
+  }
+  /* служебная строка: счётчик слева, переключатели справа */
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 28px 14px;
+  }
+  .count {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--muted);
+  }
+  .ctrl {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dots { display: flex; align-items: center; gap: 7px; }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: #c3cad1;
+    cursor: pointer;
+    transition: width 0.2s ease, background 0.2s ease;
+  }
+  .dot.on { width: 20px; border-radius: 4px; background: var(--c); }
+  .nav {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #ffffff;
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+  .nav svg { width: 15px; height: 15px; stroke-width: 2; }
+  .nav:hover { border-color: var(--c); color: var(--c); }
+
+  /* полоска времени: сколько ещё стоит эта карточка */
+  .tick { height: 2px; background: rgba(15, 20, 25, 0.08); }
+  .tick i { display: block; height: 100%; width: 0; background: var(--c); }
+  .deck.manual .tick { background: transparent; }
+
+  .deck-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    padding: 24px 28px 28px;
+  }
+  /* все карточки лежат в одной клетке: высота колоды равна самой высокой,
+     поэтому при переключении страница не дёргается, а текст всех карточек
+     остаётся в разметке — его видят и поиск, и читалки */
+  .slides { display: grid; }
+  .slide {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(7px);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+  }
+  .slide.on { opacity: 1; visibility: visible; transform: none; }
+  .slide h3 {
+    font-family: 'Unbounded', 'Google Sans', Arial, sans-serif;
+    font-size: clamp(19px, 2.5vw, 26px);
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin-bottom: 22px;
+    text-wrap: balance;
+  }
+  .slide p {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* правая часть карточки: тизер, а где его нет — место под иллюстрацию */
+  .side { align-self: start; max-width: 380px; }
+  .art {
+    min-height: 200px;
+    width: 300px;
+    border-radius: 14px;
+    background: var(--soft);
+    border: 1px dashed rgba(15, 20, 25, 0.16);
+  }
+  .teaser {
+    background: var(--soft);
+    border-radius: 16px;
+    padding: 18px 20px 20px;
+  }
+  .teaser-txt { font-size: 15px; font-weight: 700; }
+  .teaser-num {
+    display: block;
+    margin-top: 8px;
+    font-family: 'Unbounded', 'Google Sans', Arial, sans-serif;
+    font-size: clamp(23px, 3.2vw, 29px);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    color: var(--c);
+    white-space: nowrap;
+  }
+  .teaser-alt { display: block; margin-top: 5px; font-size: 14px; color: var(--muted); white-space: nowrap; }
+  .calc {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 15px;
+    border-radius: 11px;
+    background: var(--c);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .calc svg { width: 14px; height: 14px; stroke-width: 2; flex: 0 0 auto; }
+  .calc:hover { filter: brightness(1.08); }
+
+  @media (max-width: 760px) {
+    .deck-main { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+    .side { max-width: none; }
+    .art { min-height: 130px; width: auto; }
+  }
+  @media (max-width: 560px) {
+    .page { padding: 40px 18px 72px; }
+    .head { padding: 15px 18px 12px; }
+    .deck-main { padding: 20px 18px 22px; }
+    .slide h3 { margin-bottom: 18px; }
+    .slide p { font-size: 16px; }
+    .teaser { padding: 16px 18px 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide, .dot, .tab { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">mastakey STOCK</div>
+  <h1>Найти ключ быстро – удержать клиента</h1>
+  <p class="lead">Система превращает историю действий с ключами – в факты об автомобилях и складе: активность сотрудников, простои позиций, угрозы и возможности.</p>
+
+  <div class="tabs">
+    <button class="tab on" type="button" data-block="s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">Отдел продаж</button>
+    <button class="tab" type="button" data-block="s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">Склад и подготовка</button>
+    <button class="tab" type="button" data-block="s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">Контроль потерь</button>
+    <button class="tab" type="button" data-block="s4" style="--c:#7b1fa2; --soft:#efe4f4; --pale:#f8f4fa">Аналитика</button>
+    <button class="tab" type="button" data-block="s5" style="--c:#3c4043; --soft:#e8e8e8; --pale:#f5f5f6">Технические требования</button>
+  </div>
+
+  <!-- ————— 1 ————— -->
+  <section class="block on" id="s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">
+    <div class="deck" data-deck data-name="Отдел продаж">
+      <div class="head">
+        <span class="count">Отдел продаж 1 / 4</span>
+        <div class="ctrl">
+          <div class="dots"></div>
+          <button class="nav prev" type="button" aria-label="Предыдущая карточка"><svg viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>
+          <button class="nav next" type="button" aria-label="Следующая карточка"><svg viewBox="0 0 24 24"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
+        </div>
+      </div>
+      <div class="tick"><i></i></div>
+      <div class="deck-main">
+        <div class="slides">
+          <article class="slide on" data-sec="9.7">
+            <h3>Больше показов за смену, выше конверсия</h3>
+            <p>— за счёт скорости операций. Клиент не ждёт, пока продавец ищет ключ. Выдача и возврат без разрыва контакта увеличивают количество показов и вероятность сделки.</p>
+          </article>
+          <article class="slide" data-sec="9.7">
+            <h3>Исключение «серых зон» и споров</h3>
+            <p>— за счёт фиксации каждого действия. Система записывает, кто, когда и с какой целью взял ключ. Не нужно восстанавливать события по памяти или опрашивать сотрудников.</p>
+          </article>
+          <article class="slide" data-sec="9.7">
+            <h3>Удержание клиента в точке контакта</h3>
+            <p>— за счёт доступа к данным о машине прямо у автомобиля. Продавец получает информацию через чат-бот, не отходя от покупателя. Экспертность сохраняется, риск ухода снижается.</p>
+          </article>
+          <article class="slide" data-sec="8.3">
+            <h3>Снижение рисков потери ключей и простоев</h3>
+            <p>— за счёт контроля возврата. Система напоминает о ключе, если он задержался. Исключаются забытые ключи и связанные с ними простои.</p>
+          </article>
+        </div>
+        <div class="side">
+          <div class="teaser">
+            <div class="teaser-txt">Выгода по отделу продаж</div>
+            <span class="teaser-num">114 568 ₽/мес</span>
+            <span class="teaser-alt">или 1 374 816 ₽/год</span>
+            <a class="calc" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада
+              <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ————— 2 ————— -->
+  <section class="block" id="s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">
+    <div class="deck" data-deck data-name="Склад и подготовка">
+      <div class="head">
+        <span class="count">Склад и подготовка 1 / 4</span>
+        <div class="ctrl">
+          <div class="dots"></div>
+          <button class="nav prev" type="button" aria-label="Предыдущая карточка"><svg viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>
+          <button class="nav next" type="button" aria-label="Следующая карточка"><svg viewBox="0 0 24 24"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
+        </div>
+      </div>
+      <div class="tick"><i></i></div>
+      <div class="deck-main">
+        <div class="slides">
+          <article class="slide on" data-sec="7.7">
+            <h3>Быстрее оборачиваемость капитала, меньше заморозки денег</h3>
+            <p>— за счёт сокращения времени подготовки автомобиля к продаже. Каждая машина быстрее проходит этапы и выходит на показ.</p>
+          </article>
+          <article class="slide" data-sec="7.0">
+            <h3>Экономия человеко-часов, снижение простоев</h3>
+            <p>— за счёт мгновенного поиска автомобиля на площадке. Сотрудники не тратят время на поиск, сразу работают с клиентом.</p>
+          </article>
+          <article class="slide" data-sec="6.0">
+            <h3>Выше эффективность персонала</h3>
+            <p>— за счёт ускорения операций выдачи и возврата ключей. Больше операций за смену без увеличения штата.</p>
+          </article>
+          <article class="slide" data-sec="7.3">
+            <h3>Реорганизация склада без замены системы</h3>
+            <p>— за счёт модульной структуры и облачной синхронизации. Шкафы добавляются, переставляются, размещаются на разных этажах — система адаптируется автоматически.</p>
+          </article>
+        </div>
+        <div class="side">
+          <div class="teaser">
+            <div class="teaser-txt">Выгода по складу и подготовке</div>
+            <span class="teaser-num">17 711 ₽/мес</span>
+            <span class="teaser-alt">или 212 532 ₽/год</span>
+            <a class="calc" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада
+              <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ————— 3 ————— -->
+  <section class="block" id="s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">
+    <div class="deck" data-deck data-name="Контроль потерь">
+      <div class="head">
+        <span class="count">Контроль потерь 1 / 4</span>
+        <div class="ctrl">
+          <div class="dots"></div>
+          <button class="nav prev" type="button" aria-label="Предыдущая карточка"><svg viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>
+          <button class="nav next" type="button" aria-label="Следующая карточка"><svg viewBox="0 0 24 24"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
+        </div>
+      </div>
+      <div class="tick"><i></i></div>
+      <div class="deck-main">
+        <div class="slides">
+          <article class="slide on" data-sec="10.3">
+            <h3>Исключение «заморозки» автомобилей в карманах сотрудников</h3>
+            <p>— за счёт отчёта «Ключи на руках» в реальном времени. Видно, у кого ключ, сколько времени на руках, телефон сотрудника, данные автомобиля. Картина фактической доступности склада.</p>
+          </article>
+          <article class="slide" data-sec="9.7">
+            <h3>Реальное давление на возврат, а не просто видимость</h3>
+            <p>— за счёт эскалации уведомлений. Контрольный срок (например, 4 часа) → предупреждение сотруднику (Telegram/MAX/Почта) → уведомление охране/СБ. Система не просто показывает, а заставляет возвращать.</p>
+          </article>
+          <article class="slide" data-sec="9.0">
+            <h3>Исключение затрат на восстановление ключей</h3>
+            <p>— за счёт контроля возврата и напоминаний. Система напоминает о невозвращённых ключах до того, как они потеряются. Избегаются затраты на дубликаты и перепрограммирование.</p>
+          </article>
+          <article class="slide" data-sec="6.0">
+            <h3>Сохранность меток</h3>
+            <p>— за счёт отчёта «Метки» (привязать/отвязать). Метка не уезжает с проданным автомобилем, не теряется, не требует замены.</p>
+          </article>
+        </div>
+        <div class="side">
+          <div class="teaser">
+            <div class="teaser-txt">Выгода по контролю потерь</div>
+            <span class="teaser-num">1 093 ₽/мес</span>
+            <span class="teaser-alt">или 13 116 ₽/год</span>
+            <a class="calc" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада
+              <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ————— 4 ————— -->
+  <section class="block" id="s4" style="--c:#7b1fa2; --soft:#efe4f4; --pale:#f8f4fa">
+    <div class="deck" data-deck data-name="Аналитика">
+      <div class="head">
+        <span class="count">Аналитика 1 / 3</span>
+        <div class="ctrl">
+          <div class="dots"></div>
+          <button class="nav prev" type="button" aria-label="Предыдущая карточка"><svg viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>
+          <button class="nav next" type="button" aria-label="Следующая карточка"><svg viewBox="0 0 24 24"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
+        </div>
+      </div>
+      <div class="tick"><i></i></div>
+      <div class="deck-main">
+        <div class="slides">
+          <article class="slide on" data-sec="19.7">
+            <h3>Управление эффективностью отдела продаж на основе фактов, а не слов</h3>
+            <p>— отчёт показывает активность по сотрудникам и автомобилям: кто, сколько, что показывал. Три режима: «Сотрудник-Автомобили», «Автомобиль-Сотрудники», «Всего». Формат — столбчатая диаграмма по дням/часам. Система дополняет CRM в слепой зоне (на площадке, между записями воронки). Конверсия считается по фактам: МС сопоставляет показы с продажами, либо ДЦ получает число показов в своей CRM.</p>
+          </article>
+          <article class="slide" data-sec="18.7">
+            <h3>Сокращение времени и затрат на предпродажную подготовку каждого автомобиля</h3>
+            <p>— система автоматически записывает машину на участок при выдаче ключа и считает время. В кабинете видно распределение по этапам в реальном времени. Нормативы времени и затрат контролируются, отклонения и задержки приходят как уведомления (почта, Telegram, MAX) с гибкой настройкой и дублированием. Расходы по займу считаются на каждый автомобиль.</p>
+          </article>
+          <article class="slide" data-sec="17.7">
+            <h3>Выявление скрытых резервов и ускорение оборачиваемости склада</h3>
+            <p>— общий отчёт по целям, сотрудникам и автомобилям показывает закономерности, перекосы, узкие места, аномалии. Отчёт «Бездействие» выявляет машины без внимания продавцов и техников (время простоя, две колонки с сортировкой). Данные по факту отсутствия взятия ключей, а не по докладам. Рассылка по расписанию в почту, Telegram или MAX.</p>
+          </article>
+        </div>
+        <div class="side"><div class="art"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ————— 5 ————— -->
+  <section class="block" id="s5" style="--c:#3c4043; --soft:#e8e8e8; --pale:#f5f5f6">
+    <div class="deck" data-deck data-name="Технические требования">
+      <div class="head">
+        <span class="count">Технические требования 1 / 3</span>
+        <div class="ctrl">
+          <div class="dots"></div>
+          <button class="nav prev" type="button" aria-label="Предыдущая карточка"><svg viewBox="0 0 24 24"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>
+          <button class="nav next" type="button" aria-label="Следующая карточка"><svg viewBox="0 0 24 24"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
+        </div>
+      </div>
+      <div class="tick"><i></i></div>
+      <div class="deck-main">
+        <div class="slides">
+          <article class="slide on" data-sec="8.7">
+            <h3>Быстрое внедрение без остановки бизнеса</h3>
+            <p>— система устанавливается на существующую инфраструктуру, не требует длительной настройки или обучения персонала. Срок внедрения: как правило, 3–4 дня, не более недели.</p>
+          </article>
+          <article class="slide" data-sec="8.3">
+            <h3>Готовность к интеграции с вашими системами</h3>
+            <p>— API для обмена данными с CRM и DMS. Система становится единым источником фактов, а не ещё одним изолированным инструментом.</p>
+          </article>
+          <article class="slide" data-sec="5.0">
+            <h3>Надёжность и автономность</h3>
+            <p>— резервное питание, механическое открытие в экстренных случаях, облачная синхронизация при распределённом хранении.</p>
+          </article>
+        </div>
+        <div class="side"><div class="art"></div></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// Карточки раздела меняются сами, но задержка у каждой своя — по объёму её
+// текста, а не одна на всю страницу. Первое же действие посетителя выключает
+// автоматическую смену в этой колоде до конца посещения.
+(function () {
+  var ПОКОЙ = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var колоды = {};
+
+  document.querySelectorAll('[data-deck]').forEach(function (колода) {
+    var карточки = [].slice.call(колода.querySelectorAll('.slide'));
+    if (!карточки.length) return;
+
+    var имя = колода.getAttribute('data-name') || '';
+    var счётчик = колода.querySelector('.count');
+    var точки = колода.querySelector('.dots');
+    var полоска = колода.querySelector('.tick i');
+    var текущая = 0, таймер = null, сама = !ПОКОЙ, включена = false;
+
+    карточки.forEach(function (_, н) {
+      var точка = document.createElement('button');
+      точка.type = 'button';
+      точка.className = 'dot' + (н === 0 ? ' on' : '');
+      точка.setAttribute('aria-label', 'Карточка ' + (н + 1));
+      точка.addEventListener('click', function () { вручную(); показать(н); });
+      точки.appendChild(точка);
+    });
+
+    function задержка(н) {
+      return Math.max(parseFloat(карточки[н].getAttribute('data-sec')) || 9, 4) * 1000;
+    }
+    function отсчёт() {
+      if (!полоска) return;
+      полоска.style.transition = 'none';
+      полоска.style.width = '0';
+      void полоска.offsetWidth;
+      полоска.style.transition = 'width ' + задержка(текущая) + 'ms linear';
+      полоска.style.width = '100%';
+    }
+    function сброситьОтсчёт() {
+      if (!полоска) return;
+      полоска.style.transition = 'none';
+      полоска.style.width = '0';
+    }
+    function показать(н) {
+      текущая = (н + карточки.length) % карточки.length;
+      карточки.forEach(function (к, и) {
+        var это = и === текущая;
+        к.classList.toggle('on', это);
+        к.setAttribute('aria-hidden', это ? 'false' : 'true');
+      });
+      [].forEach.call(точки.children, function (т, и) {
+        т.classList.toggle('on', и === текущая);
+      });
+      счётчик.textContent = имя + ' ' + (текущая + 1) + ' / ' + карточки.length;
+      завести();
+    }
+    function завести() {
+      clearTimeout(таймер);
+      if (!сама || !включена) { сброситьОтсчёт(); return; }
+      отсчёт();
+      таймер = setTimeout(function () { показать(текущая + 1); }, задержка(текущая));
+    }
+    // посетитель взял управление — движение прекращается совсем
+    function вручную() {
+      if (!сама) return;
+      сама = false;
+      clearTimeout(таймер);
+      сброситьОтсчёт();
+      колода.classList.add('manual');
+    }
+
+    колода.querySelector('.prev').addEventListener('click', function () { вручную(); показать(текущая - 1); });
+    колода.querySelector('.next').addEventListener('click', function () { вручную(); показать(текущая + 1); });
+
+    // смахивание на телефоне
+    var началоX = null, началоY = null;
+    колода.addEventListener('touchstart', function (е) {
+      началоX = е.touches[0].clientX; началоY = е.touches[0].clientY;
+    }, { passive: true });
+    колода.addEventListener('touchend', function (е) {
+      if (началоX === null) return;
+      var сдвигX = е.changedTouches[0].clientX - началоX;
+      var сдвигY = е.changedTouches[0].clientY - началоY;
+      началоX = null;
+      if (Math.abs(сдвигX) > 45 && Math.abs(сдвигX) > Math.abs(сдвигY)) {
+        вручную();
+        показать(текущая + (сдвигX < 0 ? 1 : -1));
+      }
+    }, { passive: true });
+
+    колоды[колода.closest('.block').id] = {
+      пуск: function () { включена = true; завести(); },
+      стоп: function () { включена = false; clearTimeout(таймер); сброситьОтсчёт(); }
+    };
+
+    показать(0);
+  });
+
+  // Кнопки разделов: нажатая показывает карточки своего раздела,
+  // в остальных разделах смена карточек остановлена.
+  var кнопки = [].slice.call(document.querySelectorAll('.tab'));
+  function выбрать(имя) {
+    кнопки.forEach(function (к) { к.classList.toggle('on', к.getAttribute('data-block') === имя); });
+    document.querySelectorAll('.block').forEach(function (раздел) {
+      var это = раздел.id === имя;
+      раздел.classList.toggle('on', это);
+      var к = колоды[раздел.id];
+      if (к) (это ? к.пуск : к.стоп)();
+    });
+  }
+  кнопки.forEach(function (к) {
+    к.addEventListener('click', function () { выбрать(к.getAttribute('data-block')); });
+  });
+  выбрать('s1');
+})();
+</script>
+</body>
+</html>
