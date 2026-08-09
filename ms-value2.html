@@ -181,10 +181,11 @@
     background: var(--soft);
     border: 1px dashed rgba(15, 20, 25, 0.16);
   }
-  /* тизер намеренно тише карточки: белая подложка вместо цветной заливки,
-     число обычным шрифтом и меньше заголовка */
+  /* тизер обесцвечен: рамка без заливки, цвет остаётся только у кнопки перехода —
+     единственного места на карточке, куда нажимают */
   .teaser {
-    background: #ffffff;
+    background: transparent;
+    border: 1px solid rgba(15, 20, 25, 0.15);
     border-radius: 14px;
     padding: 15px 17px 17px;
   }
@@ -195,7 +196,7 @@
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
-    color: var(--c);
+    color: var(--ink);
     white-space: nowrap;
   }
   .teaser-alt { display: block; margin-top: 2px; font-size: 13px; color: var(--muted); white-space: nowrap; }
