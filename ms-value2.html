@@ -233,6 +233,57 @@
     .slide p { font-size: 16px; }
     .teaser { padding: 16px 18px 18px; }
   }
+
+  /* ——— блок 7: переход к калькулятору ——— */
+  .final {
+    margin-top: 56px;
+    background: #f5f5f6;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(15, 20, 25, 0.10), 0 1px 2px rgba(15, 20, 25, 0.06);
+    padding: 34px 34px 32px;
+  }
+  .final h2 {
+    font-family: 'Unbounded', 'Google Sans', Arial, sans-serif;
+    font-size: clamp(22px, 3.6vw, 32px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .final p { font-size: 17px; color: var(--muted); max-width: 60ch; }
+  .final-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 22px;
+    padding: 15px 24px;
+    border-radius: 13px;
+    background: #1a73e8;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .final-go svg { width: 16px; height: 16px; stroke-width: 2; flex: 0 0 auto; }
+  .final-go:hover { filter: brightness(1.08); }
+  .final-note { margin-top: 22px; font-size: 15px; color: var(--muted); }
+  .final-second {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(15, 20, 25, 0.35);
+    padding-bottom: 1px;
+  }
+  .final-second:hover { border-bottom-color: transparent; }
+  @media (max-width: 560px) {
+    .final { padding: 24px 20px 22px; }
+    .final-go { padding: 14px 18px; font-size: 16px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .slide, .dot, .tab { transition: none; }
   }
@@ -451,6 +502,19 @@
       </div>
     </div>
   </section>
+
+
+  <section class="final">
+    <h2>Сколько это в деньгах?</h2>
+    <p>Экономический эффект зависит от размера вашего склада, цены автомобилей и маржи. Подставьте свои цифры — расчёт займёт минуту.</p>
+    <a class="final-go" href="https://mastakey.ru/ms-calc-ru">Рассчитать эффект для своего склада
+      <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
+    <p class="final-note">Или оставьте заявку на консультацию — свяжемся в течение рабочего дня.</p>
+    <a class="final-second" href="#zayavka">Оставить заявку</a>
+  </section>
+
+  <div id="zayavka"></div>
 
 </div>
 
