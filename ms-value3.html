@@ -18,7 +18,9 @@
 
   /* кегли по указанию: главный заголовок — как названия разделов были,
      названия разделов — как был главный заголовок */
-  h1 { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(23px,3.2vw,30px); font-weight:700; line-height:1.15; letter-spacing:-.02em; margin-bottom:16px; text-wrap:balance; }
+  h1 { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-weight:700; line-height:1.1; letter-spacing:-.02em; margin-bottom:16px; }
+  .h1-big { display:block; font-size:clamp(29px,5.4vw,42px); }
+  .h1-small { display:block; font-size:clamp(23px,3.2vw,30px); margin-top:6px; }
   .lead { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:17px; font-weight:400; color:var(--ink); line-height:1.45; }
 
   .tabs { display:flex; flex-wrap:wrap; gap:8px; margin-top:30px; }
@@ -28,23 +30,21 @@
 
   .block { margin-top:60px; scroll-margin-top:18px; }
   /* название раздела и его число — одна строка, две колонки */
-  .block-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--зазор); align-items:start; }
+  .block-head { margin-bottom:6px; }
   .block h2 { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; line-height:1.08; letter-spacing:-.02em; display:flex; align-items:baseline; gap:14px; }
   .num { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; color:var(--c); }
 
-  /* тизер без заливки, кнопка контурная в цвете раздела */
-  .money { border:1px solid rgba(15,20,25,.15); border-radius:14px; padding:15px 17px 17px; }
-  .money-txt { font-size:13px; font-weight:500; color:var(--muted); }
-  .money-num { margin-top:4px; font-size:20px; font-weight:700; color:var(--ink); }
-  .money-alt { font-size:13px; font-weight:500; color:var(--muted); white-space:nowrap; }
-  .calc { display:inline-flex; align-items:center; gap:7px; margin-top:13px; padding:8px 13px; border:1px solid var(--c); border-radius:10px; color:var(--c); font-size:13px; font-weight:700; text-decoration:none; white-space:nowrap; }
-  .calc svg { width:13px; height:13px; stroke-width:2; flex:0 0 auto; }
-  .calc:hover { background:var(--pale); }
+  /* число раздела — подзаголовком под названием, одной строкой */
+  .sub { margin-top:10px; font-size:16px; color:var(--muted); }
+  .sub b { font-size:19px; color:var(--ink); white-space:nowrap; }
+  .sub-alt { white-space:nowrap; }
+  .sub-go { color:var(--c); font-weight:700; text-decoration:none; border-bottom:1px solid currentColor; white-space:nowrap; }
+  .sub-go:hover { border-bottom-color:transparent; }
 
   .items { list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:var(--зазор); margin-top:26px; }
   .card { border:1px solid var(--line); border-radius:16px; padding:var(--поле); }
   .card-num { display:block; font-size:12px; font-weight:500; color:var(--muted); margin-bottom:8px; }
-  .card h3 { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:calc(var(--кегль) + 2px); font-weight:700; line-height:1.2; letter-spacing:-.02em; margin-bottom:10px; text-wrap:balance; }
+  .card h3 { font-family:'Google Sans','Product Sans',Roboto,Arial,sans-serif; font-size:calc(var(--кегль) + 3px); font-weight:700; line-height:1.2; letter-spacing:-.02em; margin-bottom:10px; text-wrap:balance; }
   .card p { font-size:var(--кегль); font-weight:700; }
 
   .final { margin-top:72px; background:#f5f5f6; border-radius:22px; box-shadow:0 10px 30px rgba(15,20,25,.10), 0 1px 2px rgba(15,20,25,.06); padding:34px 34px 32px; }
@@ -77,7 +77,7 @@
 <body>
 <div class="page">
 
-  <h1>В ключах есть деньги! Извлеките их с помощью mastakey STOCK</h1>
+  <h1><span class="h1-big">В ключах есть деньги!</span><span class="h1-small">Извлеките их с помощью mastakey STOCK</span></h1>
   <p class="lead">Система превращает историю действий с ключами – в факты об автомобилях и складе: активность сотрудников, простои позиций, угрозы и возможности.</p>
 
   <div class="tabs">
@@ -90,11 +90,7 @@
   <section class="block" id="s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">
       <div class="block-head">
         <h2><span class="num">1</span>Отдел продаж</h2>
-        <div class="money">
-          <div class="money-txt">Выгода по отделу продаж</div>
-          <div class="money-num">114 568 ₽/мес <span class="money-alt">или 1 374 816 ₽/год</span></div>
-          <a class="calc" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></a>
-        </div>
+        <p class="sub">Выгода по отделу продаж — <b>114 568 ₽/мес</b> <span class="sub-alt">или 1 374 816 ₽/год</span> · <a class="sub-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></p>
       </div>
       <ol class="items">
         <li class="card">
@@ -122,11 +118,7 @@
   <section class="block" id="s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">
       <div class="block-head">
         <h2><span class="num">2</span>Склад и подготовка</h2>
-        <div class="money">
-          <div class="money-txt">Выгода по складу и подготовке</div>
-          <div class="money-num">17 711 ₽/мес <span class="money-alt">или 212 532 ₽/год</span></div>
-          <a class="calc" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></a>
-        </div>
+        <p class="sub">Выгода по складу и подготовке — <b>17 711 ₽/мес</b> <span class="sub-alt">или 212 532 ₽/год</span> · <a class="sub-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></p>
       </div>
       <ol class="items">
         <li class="card">
@@ -154,11 +146,7 @@
   <section class="block" id="s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">
       <div class="block-head">
         <h2><span class="num">3</span>Контроль потерь</h2>
-        <div class="money">
-          <div class="money-txt">Выгода по контролю потерь</div>
-          <div class="money-num">1 093 ₽/мес <span class="money-alt">или 13 116 ₽/год</span></div>
-          <a class="calc" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></a>
-        </div>
+        <p class="sub">Выгода по контролю потерь — <b>1 093 ₽/мес</b> <span class="sub-alt">или 13 116 ₽/год</span> · <a class="sub-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></p>
       </div>
       <ol class="items">
         <li class="card">
@@ -186,7 +174,6 @@
   <section class="block" id="s4" style="--c:#7b1fa2; --soft:#efe4f4; --pale:#f8f4fa">
       <div class="block-head">
         <h2><span class="num">4</span>Аналитика</h2>
-        <div></div>
       </div>
       <ol class="items">
         <li class="card">
