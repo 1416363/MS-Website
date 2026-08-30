@@ -138,7 +138,7 @@
 
   <div class="tabs">
     <a class="tab" href="#s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">Отдел продаж</a>
-    <a class="tab" href="#s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">Склад и подготовка</a>
+    <a class="tab" href="#s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">Склад</a>
     <a class="tab" href="#s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">Предотвращение потерь</a>
     <a class="tab" href="#s4" style="--c:#b26a00; --soft:#f6ebda; --pale:#fbf6ef">Сервис</a>
     <a class="tab" href="#s5" style="--c:#00695c; --soft:#dfeeeb; --pale:#f1f8f7">Предпродажная подготовка</a>
@@ -191,8 +191,8 @@
 
   <section class="block" id="s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">
       <div class="block-head">
-        <h2><span class="num">2</span>Склад и подготовка</h2>
-        <div class="gain"><span class="gain-label">Выгода по складу и подготовке</span><span class="gain-sum">17 711 ₽/мес</span><span class="gain-year">или 212 532 ₽/год</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></div>
+        <h2><span class="num">2</span>Склад</h2>
+        <div class="gain"><span class="gain-label">Выгода по складу</span><span class="gain-sum">17 711 ₽/мес</span><span class="gain-year">или 212 532 ₽/год</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></div>
       </div>
       <ol class="items">
         <li class="card">
@@ -589,6 +589,13 @@ window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
         }).filter(Boolean)
       });
     }
+    // порядок разделов и карточек — по номеру карточки, а не по порядку строк:
+    // строки в таблице могут переставляться
+    function ключ(к) { var ч = parseInt(к.номер, 10); return isNaN(ч) ? 1e9 : ч; }
+    разделы.forEach(function (р) { р.карточки.sort(function (а, б) { return ключ(а) - ключ(б); }); });
+    разделы.sort(function (а, б) {
+      return ключ(а.карточки[0] || {}) - ключ(б.карточки[0] || {});
+    });
     return разделы;
   }
 
