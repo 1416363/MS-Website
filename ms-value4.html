@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mastakey STOCK — ценность для автоцентра</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Unbounded:wght@400;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0f1419; --muted:#6b7580; --line:#d8dde2; --кегль:17px; --поле:20px; --зазор:20px; --край:24px; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'Google Sans','Product Sans',Roboto,Arial,sans-serif; color:var(--ink); background:#fff; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .page { max-width:1000px; margin:0 auto; padding:56px var(--край) 96px; }
+  h1,h2,h3,p,a,li { overflow-wrap:break-word; }
+  svg { fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+
+  h1 { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-weight:700; line-height:1.1; letter-spacing:-.02em; margin-bottom:16px; }
+  .h1-big { display:block; font-size:clamp(29px,5.4vw,42px); }
+  .h1-small { display:block; font-size:clamp(23px,3.2vw,30px); margin-top:6px; }
+  .lead { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:17px; font-weight:400; color:var(--ink); line-height:1.45; }
+
+  /* строка разделов прилипает к верху: иначе подсветка нажатой кнопки не видна */
+  .tabs {
+    position:sticky; top:0; z-index:20;
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin:46px calc(var(--край) * -1) 0; padding:12px var(--край);
+    background:rgba(255,255,255,.92); backdrop-filter:saturate(1.6) blur(8px);
+    box-shadow:0 1px 0 rgba(15,20,25,.07);
+  }
+  .tab {
+    font-size:15px; font-weight:700; line-height:1.2; color:var(--ink); text-decoration:none;
+    border-radius:10px; padding:11px 18px;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.55) .6px, transparent .7px) 0 0/4px 4px,
+      radial-gradient(circle at 2px 3px, rgba(0,0,0,.045) .6px, transparent .7px) 0 0/5px 5px,
+      radial-gradient(circle at 3px 1px, rgba(0,0,0,.03) .5px, transparent .6px) 0 0/7px 7px,
+      linear-gradient(180deg, #eceded 0%, #e4e6e6 46%, #dcdedf 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.85), inset 0 -1px 0 rgba(0,0,0,.10),
+      inset 1px 0 0 rgba(255,255,255,.35), inset -1px 0 0 rgba(0,0,0,.05),
+      0 1px 2px rgba(15,20,25,.10), 0 6px 14px rgba(15,20,25,.08);
+  }
+  .tab:hover { background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.6) .6px, transparent .7px) 0 0/4px 4px,
+      radial-gradient(circle at 2px 3px, rgba(0,0,0,.04) .6px, transparent .7px) 0 0/5px 5px,
+      linear-gradient(180deg, #f1f2f2 0%, #e9ebeb 46%, #e2e4e5 100%); }
+  .tab.on {
+    color:var(--c);
+    box-shadow:
+      inset 0 2px 4px rgba(0,0,0,.14), inset 0 -1px 0 rgba(255,255,255,.6),
+      0 1px 1px rgba(15,20,25,.06);
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.4) .6px, transparent .7px) 0 0/4px 4px,
+      radial-gradient(circle at 2px 3px, rgba(0,0,0,.05) .6px, transparent .7px) 0 0/5px 5px,
+      linear-gradient(180deg, #dcdedf 0%, #e4e6e6 60%, #e9eaea 100%);
+  }
+
+  .block { margin-top:60px; scroll-margin-top:var(--шапка, 84px); }
+  .block-head { margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+
+  /* табличка выгоды: бежевая эмаль, ровняется с карточками по правому краю */
+  .gain {
+    flex:0 0 auto; max-width:100%; text-align:right; padding:11px 16px 10px; border-radius:11px;
+    background:linear-gradient(180deg,#f3ece0 0%, #ece3d3 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.07), 0 1px 2px rgba(15,20,25,.08);
+  }
+  .gain-label { display:block; max-width:230px; margin-left:auto; font-size:12px; font-weight:500; color:#7a6a52; letter-spacing:.02em; }
+  .gain-sum { display:block; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:20px; font-weight:700; color:#5a4a30; line-height:1.2; margin-top:2px; white-space:nowrap; }
+  .gain-year { display:block; font-size:12px; color:#7a6a52; white-space:nowrap; }
+  .gain-go { display:inline-block; margin-top:5px; font-size:12px; font-weight:700; color:#5a4a30; text-decoration:none; border-bottom:1px solid rgba(90,74,48,.45); white-space:nowrap; }
+  .gain-go:hover { border-bottom-color:transparent; }
+  .block h2 { flex:1 1 260px; min-width:0; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; line-height:1.08; letter-spacing:-.02em; display:flex; align-items:baseline; gap:14px; }
+  .num { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; color:var(--c); }
+
+  .items { list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:var(--зазор); margin-top:26px; }
+
+  /* карточка — светло-серый металл с порошковым покрытием, лёгкая шагрень */
+  .card {
+    position:relative;
+    border-radius:14px;
+    padding:calc(var(--поле) + 12px) calc(var(--поле) + 20px) calc(var(--поле) + 18px);
+    background:
+      /* шагрень: две сетки мелких точек со сдвигом дают неровное зерно */
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.55) .6px, transparent .7px) 0 0/4px 4px,
+      radial-gradient(circle at 2px 3px, rgba(0,0,0,.045) .6px, transparent .7px) 0 0/5px 5px,
+      radial-gradient(circle at 3px 1px, rgba(0,0,0,.03) .5px, transparent .6px) 0 0/7px 7px,
+      /* сама краска: чуть светлее сверху, темнее снизу */
+      linear-gradient(180deg, #eceded 0%, #e4e6e6 46%, #dcdedf 100%);
+    /* кромка порошкового слоя плюс внутренний блик у верхней грани */
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.85),
+      inset 0 -1px 0 rgba(0,0,0,.10),
+      inset 1px 0 0 rgba(255,255,255,.35),
+      inset -1px 0 0 rgba(0,0,0,.05),
+      0 1px 2px rgba(15,20,25,.10),
+      0 8px 18px rgba(15,20,25,.09);
+  }
+  .card-num { position:absolute; right:12px; bottom:8px; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:12px; font-weight:600; color:#c2c5c6; line-height:1; pointer-events:none; }
+  .card h3 { font-family:'Google Sans','Product Sans',Roboto,Arial,sans-serif; font-size:calc(var(--кегль) + 9px); font-weight:700; line-height:1.18; letter-spacing:-.02em; margin-bottom:20px; text-wrap:balance; }
+  .card-list { list-style:none; display:flex; flex-direction:column; gap:7px; }
+  .card-list li { position:relative; padding-left:18px; font-size:var(--кегль); line-height:1.5; }
+  .card-list li::before { content:"•"; position:absolute; left:0; top:0; font-size:1.05em; line-height:inherit; color:var(--ink); }
+
+  .final { margin-top:72px; background:#f5f5f6; border-radius:22px; box-shadow:0 10px 30px rgba(15,20,25,.10), 0 1px 2px rgba(15,20,25,.06); padding:34px 34px 32px; }
+  .final h2 { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(22px,3.6vw,32px); font-weight:700; line-height:1.15; letter-spacing:-.02em; margin-bottom:12px; }
+  .final p { font-size:17px; color:var(--ink); }
+  .final-go { display:inline-flex; align-items:center; gap:9px; margin-top:22px; padding:15px 24px; border-radius:13px; background:#1a73e8; color:#fff; font-size:17px; font-weight:700; text-decoration:none; white-space:nowrap; }
+  .final-go svg { width:16px; height:16px; stroke-width:2; flex:0 0 auto; }
+  .final-note { margin-top:22px; font-size:15px; color:var(--ink); }
+  .final-second { display:inline-block; margin-top:10px; font-size:15px; font-weight:700; color:var(--ink); text-decoration:none; border-bottom:1px solid rgba(15,20,25,.35); }
+
+  @media (min-width:1400px) { :root { --кегль:19px; --поле:22px; --зазор:22px; --край:26px; } .page { max-width:1156px; } }
+  @media (min-width:1800px) { :root { --кегль:21px; --поле:24px; --зазор:24px; --край:28px; } .page { max-width:1276px; } }
+  @media (max-width:902px) { :root { --кегль:16px; --поле:18px; --зазор:18px; --край:20px; } }
+  @media (max-width:836px) { :root { --кегль:15px; --поле:16px; --зазор:16px; --край:18px; } }
+  @media (max-width:776px) { :root { --кегль:14px; --поле:14px; --зазор:14px; --край:16px; } }
+  @media (max-width:724px) {
+    :root { --кегль:16px; --поле:18px; --зазор:16px; --край:18px; }
+    .items { grid-template-columns:1fr; }
+    .tabs { gap:8px; padding:10px var(--край); margin-top:34px; }
+    .tab { font-size:14px; padding:9px 14px; }
+    .block-head { flex-direction:column; align-items:stretch; gap:14px; }
+    .gain { text-align:left; }
+    .page { padding:40px var(--край) 72px; }
+    .block { margin-top:44px; }
+    .final { padding:24px 20px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1><span class="h1-big">В ключах есть деньги!</span><span class="h1-small">Извлеките их с помощью mastakey STOCK</span></h1>
+  <p class="lead">Система превращает историю действий с ключами – в факты об автомобилях и складе: активность сотрудников, простои позиций, угрозы и возможности.</p>
+
+  <div class="tabs">
+    <a class="tab" href="#s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">Отдел продаж</a>
+    <a class="tab" href="#s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">Склад и подготовка</a>
+    <a class="tab" href="#s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">Предотвращение потерь</a>
+    <a class="tab" href="#s4" style="--c:#b26a00; --soft:#f6ebda; --pale:#fbf6ef">Сервис</a>
+    <a class="tab" href="#s5" style="--c:#00695c; --soft:#dfeeeb; --pale:#f1f8f7">Предпродажная подготовка</a>
+    <a class="tab" href="#s6" style="--c:#7b1fa2; --soft:#efe4f4; --pale:#f8f4fa">Аналитика</a>
+  </div>
+
+<section class="block" id="s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">
+      <div class="block-head">
+        <h2><span class="num">1</span>Отдел продаж</h2>
+        <div class="gain"><span class="gain-label">Выгода по отделу продаж</span><span class="gain-sum">114 568 ₽/мес</span><span class="gain-year">или 1 374 816 ₽/год</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></div>
+      </div>
+      <ol class="items">
+        <li class="card">
+          <span class="card-num">1</span>
+          <h3>Выше конверсия, благодаря быстродействию</h3>
+          <ul class="card-list">
+            <li>продавец сэкономит время клиента, потому что быстро найдет ключ</li>
+            <li>вероятность сделки будет выше, потому что клиент будет впечатлен быстродействием</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">2</span>
+          <h3>Удержание клиента в точке контакта</h3>
+          <ul class="card-list">
+            <li>вероятность сделки будет выше, потому что сотрудник быстро получит данные любого автомобиля на складе</li>
+            <li>сотрудник получит данные быстро, потому что у него в телефоне есть чат-бот, подключенный к облаку системы</li>
+            <li>клиент получит ответы на свои вопросы сразу, а не с ожиданием</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">3</span>
+          <h3>Снижение рисков потери ключей и простоев</h3>
+          <ul class="card-list">
+            <li>меньше простоев, потому что найти ключ – быстро</li>
+            <li>поиски ключей будут быстрее, потому что система напомнит вернуть взятое</li>
+            <li>система напомнит тем сотрудникам и тогда, как будет настроено</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">4</span>
+          <h3>Показ состоится как запланировано</h3>
+          <ul class="card-list">
+            <li>показ состоится, потому что ключ будет готов вовремя</li>
+            <li>ключ будет вовремя, потому что забронирован на клиента</li>
+            <li>снять бронь – только в особом порядке</li>
+          </ul>
+        </li>
+      </ol>
+  </section>
+
+  <section class="block" id="s2" style="--c:#188038; --soft:#e3f0e7; --pale:#f3f9f5">
+      <div class="block-head">
+        <h2><span class="num">2</span>Склад и подготовка</h2>
+        <div class="gain"><span class="gain-label">Выгода по складу и подготовке</span><span class="gain-sum">17 711 ₽/мес</span><span class="gain-year">или 212 532 ₽/год</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></div>
+      </div>
+      <ol class="items">
+        <li class="card">
+          <span class="card-num">5</span>
+          <h3>Раньше вывод в продажу</h3>
+          <ul class="card-list">
+            <li>вывод в продажу быстрее, потому что всегда известно место стоянки</li>
+            <li>место стоянки известно, потому что фиксируется при возврате ключа</li>
+            <li>фиксируется не только место, но и история перестановок</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">6</span>
+          <h3>Готовый автомобиль – плюс к конверсии</h3>
+          <ul class="card-list">
+            <li>автомобиль всегда заправлен и заряжен, потому что обслужен вовремя</li>
+            <li>обслужен вовремя, потому что система напомнит по регламенту</li>
+            <li>напоминание в чат/почту, а план работ – в кабинете и редактируем</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">7</span>
+          <h3>Самообслуживание сотрудников – высвобождение ресурсов</h3>
+          <ul class="card-list">
+            <li>кладовщик свободен для другой работы, потому что каждый обслуживает себя сам</li>
+            <li>обслуживает себя сам, потому что учет персонализирован</li>
+            <li>персонализированный учет – точные данные</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">8</span>
+          <h3>Гибкость и адаптивность</h3>
+          <ul class="card-list">
+            <li>изменения не проблема, потому что перестройка проста</li>
+            <li>перестройка проста, потому что легко добавить/убрать ящик, соединить/разделить шкафы и т.д.</li>
+            <li>любые части системы синхронизируются через облако и работают как целое</li>
+          </ul>
+        </li>
+      </ol>
+  </section>
+
+  <section class="block" id="s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">
+      <div class="block-head">
+        <h2><span class="num">3</span>Предотвращение потерь</h2>
+        <div class="gain"><span class="gain-label">Выгода по предотвращению потерь</span><span class="gain-sum">1 093 ₽/мес</span><span class="gain-year">или 13 116 ₽/год</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">Посчитать для своего склада</a></div>
+      </div>
+      <ol class="items">
+        <li class="card">
+          <span class="card-num">9</span>
+          <h3>Ключи перестают пропадать</h3>
+          <ul class="card-list">
+            <li>нет расходов на дубликаты, потому что потерять сложно</li>
+            <li>потерять сложно, потому что взятие ключа – это автомобиль, сотрудник, цель, время и др. детали</li>
+            <li>помимо прочего – настраиваемый лимит ключей на каждого сотрудника</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">10</span>
+          <h3>Ключ возвращают, а не обещают</h3>
+          <ul class="card-list">
+            <li>машина быстрее вернётся в продажу, потому что ключ не задержат</li>
+            <li>не задержат, потому что о просрочке система напомнит сама</li>
+            <li>напоминание идёт сотруднику, потом охране — срок назначает центр</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">11</span>
+          <h3>Больше автомобилей в продаже</h3>
+          <ul class="card-list">
+            <li>доля склада в продаже возрастет, потому что ключ на руках не останется незаметно</li>
+            <li>не останется, потому что все невозвращенные – в отчете "Ключи на руках"</li>
+            <li>отчет в реальном времени – не только по запросу, но и в рассылке, с уведомлениями</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">12</span>
+          <h3>Ключ не достанется чужому</h3>
+          <ul class="card-list">
+            <li>угон еще сложнее, потому что доступ ограничен</li>
+            <li>доступ ограничен, потому что действуют роли, права доступа, цели взятия</li>
+            <li>при обрыве питания – включается батарея, а дальше – механический ключ у охраны</li>
+          </ul>
+        </li>
+      </ol>
+  </section>
+
+  <section class="block" id="s4" style="--c:#b26a00; --soft:#f6ebda; --pale:#fbf6ef">
+      <div class="block-head">
+        <h2><span class="num">4</span>Сервис</h2>
+      </div>
+      <ol class="items">
+        <li class="card">
+          <span class="card-num">13</span>
+          <h3>Выше загрузка постов</h3>
+          <ul class="card-list">
+            <li>загрузка постов вырастет, потому что записаться сможет и тот, кто не успевает в рабочие часы</li>
+            <li>успеет любой, потому что сдать машину можно после закрытия</li>
+            <li>приемщик не нужен, потому что клиент сдает ключ в терминал по коду записи на СТО</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">14</span>
+          <h3>Модернизация СТО</h3>
+          <ul class="card-list">
+            <li>в сервисе меньше пауз, потому что ключи всегда на своих местах</li>
+            <li>на своих местах, потому что работают отдельные шкафы-терминалы в зоне работ</li>
+            <li>шкаф сервиса ставится дополнительно, как пристройка к основной системе</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">15</span>
+          <h3>Подменный парк под контролем</h3>
+          <ul class="card-list">
+            <li>подменных автомобилей хватит каждому клиенту, без задержки сотрудником</li>
+            <li>без задержки, потому что ключ бронируется под запись</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">13</span>
+          <h3>Выше загрузка постов</h3>
+          <ul class="card-list">
+            <li>загрузка постов вырастет, потому что записаться сможет и тот, кто не успевает в рабочие часы</li>
+            <li>успеет любой, потому что сдать машину можно после закрытия</li>
+            <li>приемщик не нужен, потому что клиент сдает ключ в терминал по коду записи на СТО</li>
+          </ul>
+        </li>
+      </ol>
+  </section>
+
+  <section class="block" id="s5" style="--c:#00695c; --soft:#dfeeeb; --pale:#f1f8f7">
+      <div class="block-head">
+        <h2><span class="num">5</span>Предпродажная подготовка</h2>
+      </div>
+      <ol class="items">
+        <li class="card">
+          <span class="card-num">17</span>
+          <h3>Снижение убытков от простоя</h3>
+          <ul class="card-list">
+            <li>убытки от простоя между этапами снизятся, потому что скрытые задержки станут видны</li>
+            <li>задержки станут видны, потому что время автомобиля на участке сверяется с нормой непрерывно</li>
+            <li>норма превышена – отправится уведомление и повторится, если пропущено</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">18</span>
+          <h3>Ускорение вывода в продажу</h3>
+          <ul class="card-list">
+            <li>автомобили выходят в продажу быстрее, потому что экономятся время, деньги и ресурсы бизнеса</li>
+            <li>экономятся потому, что появляются наглядные данные по каждому автомобилю на каждом этапе</li>
+            <li>в реальном времени отображаются расходы на подготовку: время, накопленные проценты по заемным средствам и другие ресурсы</li>
+          </ul>
+        </li>
+      </ol>
+  </section>
+
+  <section class="block" id="s6" style="--c:#7b1fa2; --soft:#efe4f4; --pale:#f8f4fa">
+      <div class="block-head">
+        <h2><span class="num">6</span>Аналитика</h2>
+      </div>
+      <ol class="items">
+        <li class="card">
+          <span class="card-num">19</span>
+          <h3>Весь путь автомобиля – по целям его ключа</h3>
+          <ul class="card-list">
+            <li>потери на стыках снижаются, так как цели взятия автоматически складываются в путь автомобиля в отчетах и диаграммах</li>
+            <li>живые отчеты по всем целям взятия – для выявления точек роста и продуктивности</li>
+            <li>любой отчет – как по запросу, так и в рассылке и напоминаниях.</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">20</span>
+          <h3>Меньше слепых зон в воронке</h3>
+          <ul class="card-list">
+            <li>отчетность CRM/сотрудника усилится, так как история взятия ключей максимально достоверна</li>
+            <li>отчет и диаграмма "Активность продаж" – это история работы отдела как в целом, так и индивидуально: по сотрудникам, по автомобилям и др.</li>
+          </ul>
+        </li>
+        <li class="card">
+          <span class="card-num">21</span>
+          <h3>Каждый автомобиль в поле зрения</h3>
+          <ul class="card-list">
+            <li>по каждой залежавшейся машине станет ясно, снижать цену или разбираться с отделом</li>
+            <li>отчёт «Бездействие» показывает, сколько времени ключ не брал ни продавец, ни техник</li>
+            <li>две колонки с сортировкой — по продавцам и по технике — сразу по всему складу</li>
+          </ul>
+        </li>
+      </ol>
+  </section>
+
+  <section class="final">
+    <h2>Сколько это в деньгах?</h2>
+    <p>Экономический эффект зависит от размера вашего склада, цены автомобилей и маржи. Подставьте свои цифры — расчёт займёт минуту.</p>
+    <a class="final-go" href="https://mastakey.ru/ms-calc-ru">Рассчитать эффект для своего склада <svg viewBox="0 0 24 24"><path d="M4 12h15"/><path d="M13 6l6 6-6 6"/></svg></a>
+    <p class="final-note">Или оставьте заявку на консультацию — свяжемся в течение рабочего дня.</p>
+    <a class="final-second" href="#zayavka">Оставить заявку</a>
+  </section>
+
+  <div id="zayavka"></div>
+</div>
+
+<script>
+// Определение места посетителя: спрашивает службы один раз и раздаёт
+// готовый ответ всем, кто его ждёт. Неудача ничего не ломает и не видна.
+var МЕСТО = (function () {
+  // Цепочка служб: проверяется не «ответила ли служба», а «есть ли город».
+  // Порядок выбран по точности на известных проверочных адресах.
+  var СЛУЖБЫ = [
+    { адрес: 'https://ip.guide/', разбор: function (d) {
+        var l = d.location || {};
+        return { город: l.city, страна: l.country, адрес: d.ip };
+      } },
+    { адрес: 'https://get.geojs.io/v1/ip/geo.json', разбор: function (d) {
+        return { город: d.city, страна: d.country, адрес: d.ip };
+      } },
+    { адрес: 'https://ipinfo.io/json', разбор: function (d) {
+        return { город: d.city, страна: d.country, адрес: d.ip };
+      } },
+    { адрес: 'https://api.ipbase.com/v1/json/', разбор: function (d) {
+        return { город: d.city, страна: d.country_name, адрес: d.ip };
+      } }
+  ];
+
+  var готово = null, ждущие = [], адресСети = '';
+
+  function часовойПояс() {
+    try {
+      var зона = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return зона ? 'часовой пояс ' + зона : '';
+    } catch (e) { return ''; }
+  }
+
+  function раздать(место) {
+    готово = место;
+    var список = ждущие;
+    ждущие = [];
+    список.forEach(function (кто) { try { кто(готово); } catch (e) {} });
+  }
+
+  function спросить(н) {
+    н = н || 0;
+    if (н >= СЛУЖБЫ.length) {
+      раздать({ город: часовойПояс(), страна: '', адрес: адресСети });
+      return;
+    }
+    var с = СЛУЖБЫ[н];
+    fetch(с.адрес)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var из = с.разбор(d) || {};
+        if (из.адрес) адресСети = String(из.адрес);
+        if (из.город) {
+          раздать({
+            город: String(из.город),
+            страна: из.страна ? String(из.страна) : '',
+            адрес: адресСети
+          });
+        } else {
+          спросить(н + 1);
+        }
+      })
+      .catch(function () { спросить(н + 1); });
+  }
+
+  спросить(0);
+
+  return {
+    когдаГотово: function (кто) {
+      if (готово) { try { кто(готово); } catch (e) {} }
+      else ждущие.push(кто);
+    }
+  };
+})();
+
+// Выбор калькулятора по стране посетителя.
+(function () {
+  var КАЗАХСТАН = ['kz', 'kaz', 'kazakhstan', 'казахстан', 'қазақстан'];
+  МЕСТО.когдаГотово(function (м) {
+    if (КАЗАХСТАН.indexOf(String(м.страна || '').trim().toLowerCase()) === -1) return;
+    [].slice.call(document.querySelectorAll('a[href*="ms-calc-ru"]')).forEach(function (к) {
+      к.href = к.href.replace('ms-calc-ru', 'ms-calc-kz');
+    });
+  });
+})();
+
+
+// Липкая строка разделов переносится на две строки на узких экранах.
+// Отступ для перехода по кнопке считается по её фактической высоте.
+(function () {
+  function мерить() {
+    var строка = document.querySelector('.tabs');
+    if (!строка) return;
+    var высота = Math.round(строка.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--шапка', (высота + 18) + 'px');
+  }
+  window.ИЗМЕРИТЬ_ШАПКУ = мерить;
+  мерить();
+  window.addEventListener('resize', мерить);
+  window.addEventListener('load', мерить);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(мерить);
+})();
+
+window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
+  var кнопки = [], разделы = [], ведёмВручную = false, таймер = null;
+
+  function пометить(и) {
+    кнопки.forEach(function (к, н) { к.classList.toggle('on', н === и); });
+  }
+
+  function шапка() {
+    var с = document.querySelector('.tabs');
+    return с ? с.getBoundingClientRect().height : 0;
+  }
+
+  // Активен тот раздел, чей верх последним прошёл под строкой разделов.
+  // Досмотрели до низа страницы — активен последний.
+  function пересчитать() {
+    if (ведёмВручную || !разделы.length) return;
+    var порог = шапка() + 24;
+    var внизу = window.innerHeight + window.scrollY >= document.body.scrollHeight - 4;
+    if (внизу) { пометить(разделы.length - 1); return; }
+    var текущий = 0;
+    разделы.forEach(function (р, и) {
+      if (р && р.getBoundingClientRect().top <= порог) текущий = и;
+    });
+    пометить(текущий);
+  }
+
+  function собрать() {
+    кнопки = [].slice.call(document.querySelectorAll('.tab'));
+    разделы = кнопки.map(function (к) { return document.querySelector(к.getAttribute('href')); });
+    кнопки.forEach(function (к, и) {
+      к.addEventListener('click', function () {
+        // кнопка загорается сразу, до прокрутки; определение по прокрутке
+        // молчит, пока страница едет к разделу
+        пометить(и);
+        ведёмВручную = true;
+        clearTimeout(таймер);
+        таймер = setTimeout(function () { ведёмВручную = false; пересчитать(); }, 900);
+      });
+    });
+    пересчитать();
+  }
+
+  window.addEventListener('scroll', пересчитать, { passive: true });
+  window.addEventListener('resize', пересчитать);
+  собрать();
+  return собрать;
+})();
+
+// Карточки берутся из Google-таблицы. Разметка на странице — запасной вариант:
+// не ответила таблица, ответила с ошибкой или пришла пустой — остаётся то, что уже свёрстано.
+(function () {
+  var ТАБЛИЦА = '1QQBUnCOFtdYd6_3szeFolWkJfjN1x6i2aJqDSlzH6fg';
+  var ЛИСТ = 'Лист1';
+  var ЦВЕТА = [
+    ['#1a73e8','#e4eefc','#f4f8fe'], ['#188038','#e3f0e7','#f3f9f5'],
+    ['#a50e0e','#f4e2e2','#faf3f3'], ['#b26a00','#f6ebda','#fbf6ef'],
+    ['#00695c','#dfeeeb','#f1f8f7'], ['#7b1fa2','#efe4f4','#f8f4fa']
+  ];
+
+  function разобрать(текст) {
+    var строки = [], поле = '', строка = [], вкавычках = false, и = 0;
+    while (и < текст.length) {
+      var з = текст[и];
+      if (вкавычках) {
+        if (з === '"') { if (текст[и+1] === '"') { поле += '"'; и++; } else вкавычках = false; }
+        else поле += з;
+      } else if (з === '"') вкавычках = true;
+      else if (з === ',') { строка.push(поле); поле = ''; }
+      else if (з === '\n') { строка.push(поле); строки.push(строка); строка = []; поле = ''; }
+      else if (з !== '\r') поле += з;
+      и++;
+    }
+    if (поле !== '' || строка.length) { строка.push(поле); строки.push(строка); }
+    return строки;
+  }
+
+  function экран(с) {
+    return String(с).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function собрать(строки) {
+    var разделы = [], поимени = {};
+    for (var и = 1; и < строки.length; и++) {
+      var с = строки[и];
+      if (!с || !с[0] || !с[2]) continue;
+      var имя = String(с[0]).trim();
+      if (!поимени[имя]) { поимени[имя] = { имя: имя, карточки: [] }; разделы.push(поимени[имя]); }
+      поимени[имя].карточки.push({
+        номер: String(с[1] || '').trim(),
+        заголовок: String(с[2]).trim(),
+        строки: String(с[3] || '').split('\n').map(function (л) {
+          return л.replace(/^\s*[-–—•]\s*/, '').trim();
+        }).filter(Boolean)
+      });
+    }
+    return разделы;
+  }
+
+  function нарисовать(разделы) {
+    if (!разделы.length) return;
+    var вкладки = document.querySelector('.tabs');
+    var старые = [].slice.call(document.querySelectorAll('section.block'));
+    if (!вкладки || !старые.length) return;
+
+    var кнопки = '', блоки = '';
+    разделы.forEach(function (р, и) {
+      var ц = ЦВЕТА[и % ЦВЕТА.length];
+      var стиль = '--c:' + ц[0] + '; --soft:' + ц[1] + '; --pale:' + ц[2];
+      кнопки += '<a class="tab" href="#s' + (и+1) + '" style="' + стиль + '">' + экран(р.имя) + '</a>';
+      var пункты = р.карточки.map(function (к) {
+        var сп = к.строки.map(function (л) { return '<li>' + экран(л) + '</li>'; }).join('');
+        return '<li class="card"><h3>' + экран(к.заголовок) + '</h3>'
+             + '<ul class="card-list">' + сп + '</ul>'
+             + '<span class="card-num">' + экран(к.номер) + '</span></li>';
+      }).join('');
+      блоки += '<section class="block" id="s' + (и+1) + '" style="' + стиль + '">'
+             + '<div class="block-head"><h2><span class="num">' + (и+1) + '</span>' + экран(р.имя) + '</h2></div>'
+             + '<ol class="items">' + пункты + '</ol></section>';
+    });
+
+    // таблички выгоды переносятся из свёрстанного: суммы считаются не в таблице
+    var таблички = {};
+    старые.forEach(function (с) {
+      var г = с.querySelector('.gain');
+      var н = с.querySelector('h2');
+      if (г && н) таблички[н.textContent.replace(/^\d+\s*/, '').trim()] = г;
+    });
+
+    // якорь берётся до удаления: вставлять перед уже удалённым узлом нельзя
+    var место = старые[0].parentNode;
+    var до = старые[старые.length - 1].nextElementSibling;
+    var кусок = document.createElement('div');
+    кусок.innerHTML = блоки;
+    var новые = [].slice.call(кусок.children);
+    старые.forEach(function (с) { с.parentNode.removeChild(с); });
+    новые.forEach(function (с) {
+      var н = с.querySelector('h2');
+      var имя = н ? н.textContent.replace(/^\d+\s*/, '').trim() : '';
+      if (таблички[имя]) с.querySelector('.block-head').appendChild(таблички[имя]);
+      место.insertBefore(с, до);
+    });
+    вкладки.innerHTML = кнопки;
+  }
+
+  try {
+    var адрес = 'https://docs.google.com/spreadsheets/d/' + ТАБЛИЦА
+              + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(ЛИСТ);
+    fetch(адрес, { cache: 'no-store' })
+      .then(function (о) { if (!о.ok) throw 0; return о.text(); })
+      .then(function (текст) { нарисовать(собрать(разобрать(текст))); })
+      .then(function () { if (window.ИЗМЕРИТЬ_ШАПКУ) window.ИЗМЕРИТЬ_ШАПКУ(); if (window.ОБНОВИТЬ_ВКЛАДКИ) window.ОБНОВИТЬ_ВКЛАДКИ(); })
+      .catch(function () {});
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
