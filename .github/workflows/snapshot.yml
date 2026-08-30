@@ -1,6 +1,6 @@
 # Снимок таблицы карточек: вписывает нынешнее содержимое таблицы прямо в страницу,
 # чтобы при её открытии сразу показывался верный текст, а не прежний.
-name: Снимок карточек
+name: Snapshot cards
 
 on:
   schedule:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: снимок-карточек
+  group: snapshot-cards
   cancel-in-progress: false
 
 jobs:
