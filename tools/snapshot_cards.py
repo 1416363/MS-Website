@@ -2,7 +2,7 @@
 """Снимок таблицы карточек.
 Вписывает в страницу нынешнее содержимое таблицы, чтобы при открытии
 сразу показывался верный текст, а не прежний. Запускается по расписанию."""
-import urllib.request, csv, io, html, re, pathlib
+import urllib.request, urllib.parse, csv, io, html, re, pathlib
 
 ТАБЛИЦА = "1QQBUnCOFtdYd6_3szeFolWkJfjN1x6i2aJqDSlzH6fg"
 ЛИСТ = "Лист1"
