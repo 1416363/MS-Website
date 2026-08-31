@@ -78,6 +78,8 @@
     background:linear-gradient(180deg,#e7dcc7 0%, #ded1b8 100%);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(0,0,0,.07), 0 1px 2px rgba(15,20,25,.08); }
   .gain-go:hover { background:linear-gradient(180deg,#ece2d1 0%, #e4d8c2 100%); }
+  /* раздел без посчитанной выгоды: только кнопка, вид тот же */
+  .gain-solo { flex:0 0 auto; margin-left:auto; }
   .gain-go:active { box-shadow: inset 0 2px 4px rgba(0,0,0,.13); }
   .block h2 { flex:1 1 260px; min-width:0; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; line-height:1.08; letter-spacing:-.02em; display:flex; align-items:baseline; gap:14px; }
   .num { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; color:var(--c); }
@@ -408,7 +410,14 @@ window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
     [].slice.call(место.querySelectorAll('section.block')).forEach(function (с) {
       var н = с.querySelector('h2');
       var имя = н ? н.textContent.replace(/^\d+\s*/, '').trim() : '';
-      if (ТАБЛИЧКИ[имя]) с.querySelector('.block-head').insertAdjacentHTML('beforeend', ТАБЛИЧКИ[имя]);
+      var голова = с.querySelector('.block-head');
+      if (ТАБЛИЧКИ[имя]) {
+        голова.insertAdjacentHTML('beforeend', ТАБЛИЧКИ[имя]);
+      } else {
+        голова.insertAdjacentHTML('beforeend',
+          '<a class="gain-go gain-solo" href="https://mastakey.ru/ms-calc-ru">'
+          + 'рассчитать<br>окупаемость<br>для своего склада</a>');
+      }
     });
     вкладки.innerHTML = кнопки;
   }
