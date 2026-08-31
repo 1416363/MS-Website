@@ -66,11 +66,16 @@
     background:linear-gradient(180deg,#f3ece0 0%, #ece3d3 100%);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.07), 0 1px 2px rgba(15,20,25,.08);
   }
-  .gain-sum { display:block; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:22px; font-weight:700; color:#5a4a30; line-height:1.15; white-space:nowrap; }
+  .gain-sum { display:block; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:23px; font-weight:700; color:#5a4a30; line-height:1.15; white-space:nowrap; }
+  .gain-plus { color:#1e7a3c; }
+  .gain-unit { font-size:.62em; font-weight:600; color:#7a6a52; letter-spacing:.01em; }
   .gain-year { display:block; font-size:13px; color:#7a6a52; white-space:nowrap; }
-  .gain-label { display:block; margin-top:5px; max-width:250px; margin-left:auto; font-size:13px; font-weight:500; color:#7a6a52; }
-  .gain-go { display:inline-block; margin-top:7px; font-size:12px; font-weight:700; color:#5a4a30; text-decoration:none; border-bottom:1px solid rgba(90,74,48,.45); white-space:nowrap; }
-  .gain-go:hover { border-bottom-color:transparent; }
+  .gain-label { display:block; margin-top:9px; padding-top:9px; max-width:250px; margin-left:auto; border-top:1px solid rgba(122,106,82,.28); font-size:13px; font-weight:500; color:#7a6a52; }
+  .gain-go { display:inline-block; margin-top:9px; padding:7px 13px; border-radius:8px; font-size:12px; font-weight:700; color:#4a3c25; text-decoration:none; white-space:nowrap;
+    background:linear-gradient(180deg,#e7dcc7 0%, #ded1b8 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(0,0,0,.07), 0 1px 2px rgba(15,20,25,.08); }
+  .gain-go:hover { background:linear-gradient(180deg,#ece2d1 0%, #e4d8c2 100%); }
+  .gain-go:active { box-shadow: inset 0 2px 4px rgba(0,0,0,.13); }
   .block h2 { flex:1 1 260px; min-width:0; font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; line-height:1.08; letter-spacing:-.02em; display:flex; align-items:baseline; gap:14px; }
   .num { font-family:'Unbounded','Google Sans',Arial,sans-serif; font-size:clamp(29px,5.4vw,42px); font-weight:700; color:var(--c); }
 
@@ -148,7 +153,7 @@
   <section class="block" id="s1" style="--c:#1a73e8; --soft:#e4eefc; --pale:#f4f8fe">
       <div class="block-head">
         <h2><span class="num">1</span>Отдел продаж</h2>
-        <div class="gain"><span class="gain-sum">+114 568 ₽/мес</span><span class="gain-year">или 1 374 816 ₽/год</span><span class="gain-label">– выгода по Отделу продаж</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать для своего склада</a></div>
+        <div class="gain"><span class="gain-sum"><span class="gain-plus">+</span>114 568<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 1 374 816 ₽/год</span><span class="gain-label">– выгода по Отделу продаж</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать для своего склада</a></div>
       </div>
       <ol class="items">
         <li class="card">
@@ -228,7 +233,7 @@
   <section class="block" id="s3" style="--c:#a50e0e; --soft:#f4e2e2; --pale:#faf3f3">
       <div class="block-head">
         <h2><span class="num">3</span>Склад</h2>
-        <div class="gain"><span class="gain-sum">+17 711 ₽/мес</span><span class="gain-year">или 212 532 ₽/год</span><span class="gain-label">– выгода по Складу</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать для своего склада</a></div>
+        <div class="gain"><span class="gain-sum"><span class="gain-plus">+</span>17 711<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 212 532 ₽/год</span><span class="gain-label">– выгода по Складу</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать для своего склада</a></div>
       </div>
       <ol class="items">
         <li class="card">
@@ -273,7 +278,7 @@
   <section class="block" id="s4" style="--c:#b26a00; --soft:#f6ebda; --pale:#fbf6ef">
       <div class="block-head">
         <h2><span class="num">4</span>Предотвращение потерь</h2>
-        <div class="gain"><span class="gain-sum">+1 093 ₽/мес</span><span class="gain-year">или 13 116 ₽/год</span><span class="gain-label">– выгода по Предотвращению потерь</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать для своего склада</a></div>
+        <div class="gain"><span class="gain-sum"><span class="gain-plus">+</span>1 093<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 13 116 ₽/год</span><span class="gain-label">– выгода по Предотвращению потерь</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать для своего склада</a></div>
       </div>
       <ol class="items">
         <li class="card">
