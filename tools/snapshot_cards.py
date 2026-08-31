@@ -31,6 +31,11 @@ for с in строки[1:]:
 
 def щ(t): return html.escape(t, quote=False)
 
+
+def жирным(t):
+    """Слова между звёздочками — жирным. Звёздочки убираются."""
+    return re.sub(r'\*([^*\n]+)\*', r'<b>\1</b>', щ(t))
+
 вкладки, блоки = [], []
 for и, р in enumerate(разделы):
     c, soft, pale = ЦВЕТА[и % len(ЦВЕТА)]
@@ -38,10 +43,10 @@ for и, р in enumerate(разделы):
     вкладки.append(f'    <a class="tab" href="#s{и+1}" style="{стиль}">{щ(р["имя"])}</a>')
     пункты = []
     for к in р["карточки"]:
-        сп = "".join(f"\n            <li>{щ(л)}</li>" for л in к["строки"])
+        сп = "".join(f"\n            <li>{жирным(л)}</li>" for л in к["строки"])
         пункты.append(
             f'        <li class="card">\n'
-            f'          <h3>{щ(к["заголовок"])}</h3>\n'
+            f'          <h3>{жирным(к["заголовок"])}</h3>\n'
             f'          <ul class="card-list">{сп}\n          </ul>\n'
             f'          <span class="card-num">{щ(к["номер"])}</span>\n'
             f'        </li>')
