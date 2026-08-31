@@ -71,11 +71,10 @@
   .gain-unit { font-size:.62em; font-weight:600; color:#7a6a52; letter-spacing:.01em; }
   .gain-year { display:block; font-size:13px; color:#7a6a52; white-space:nowrap; }
   .gain-cols { display:flex; align-items:stretch; justify-content:flex-end; gap:14px; }
-  .gain-label-top { display:block; }
-  .gain-right { flex:0 1 auto; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:10px; padding-left:14px; border-left:1px solid rgba(122,106,82,.32); }
+  .gain-right { flex:0 0 auto; display:flex; align-items:stretch; padding-left:14px; border-left:1px solid rgba(122,106,82,.32); }
   .gain-nums { flex:0 0 auto; text-align:right; }
-  .gain-label { display:block; max-width:150px; font-size:13px; font-weight:500; color:#7a6a52; text-align:right; }
-  .gain-go { display:block; margin-top:0; padding:8px 13px; border-radius:8px; font-size:12px; font-weight:700; line-height:1.25; color:#4a3c25; text-decoration:none; text-align:center;
+  .gain-label { display:block; margin-top:6px; font-size:11px; font-weight:600; letter-spacing:.06em; color:#8a7a62; text-align:right; }
+  .gain-go { display:flex; flex-direction:column; justify-content:center; margin-top:0; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:700; line-height:1.25; color:#4a3c25; text-decoration:none; text-align:center;
     background:linear-gradient(180deg,#e7dcc7 0%, #ded1b8 100%);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(0,0,0,.07), 0 1px 2px rgba(15,20,25,.08); }
   .gain-go:hover { background:linear-gradient(180deg,#ece2d1 0%, #e4d8c2 100%); }
@@ -134,7 +133,7 @@
     .block h2 { flex:0 0 auto; }
     .gain { text-align:right; }
     .gain-cols { display:block; }
-    .gain-label { display:block; max-width:none; margin-top:9px; padding-left:0; padding-top:9px; border-left:0; border-top:1px solid rgba(122,106,82,.32); }
+    .gain-right { display:block; margin-top:10px; padding-left:0; padding-top:10px; border-left:0; border-top:1px solid rgba(122,106,82,.32); }
     .page { padding:40px var(--край) 72px; }
     .block { margin-top:44px; }
     .final { padding:24px 20px 22px; }
@@ -400,9 +399,9 @@ window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
 
     // таблички выгоды заданы здесь: суммы считает калькулятор, а не таблица
     var ТАБЛИЧКИ = {
-    'Отдел продаж': '<div class="gain"><div class="gain-cols"><div class="gain-nums"><span class="gain-sum"><span class="gain-plus">+</span>114 568<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 1 374 816 ₽/год</span></div><div class="gain-right"><span class="gain-label"><span class="gain-label-top">выгода по</span>Отделу продаж</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать окупаемость<br>для своего склада</a></div></div></div>',
-    'Склад': '<div class="gain"><div class="gain-cols"><div class="gain-nums"><span class="gain-sum"><span class="gain-plus">+</span>17 711<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 212 532 ₽/год</span></div><div class="gain-right"><span class="gain-label"><span class="gain-label-top">выгода по</span>Складу</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать окупаемость<br>для своего склада</a></div></div></div>',
-    'Предотвращение потерь': '<div class="gain"><div class="gain-cols"><div class="gain-nums"><span class="gain-sum"><span class="gain-plus">+</span>5 000<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 60 000 ₽/год</span></div><div class="gain-right"><span class="gain-label"><span class="gain-label-top">выгода по</span>Предотвращению потерь</span><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать окупаемость<br>для своего склада</a></div></div></div>'
+    'Отдел продаж': '<div class="gain"><div class="gain-cols"><div class="gain-nums"><span class="gain-sum"><span class="gain-plus">+</span>114 568<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 1 374 816 ₽/год</span><span class="gain-label">ВЫГОДА ПО РАЗДЕЛУ</span></div><div class="gain-right"><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать<br>окупаемость<br>для своего склада</a></div></div></div>',
+    'Склад': '<div class="gain"><div class="gain-cols"><div class="gain-nums"><span class="gain-sum"><span class="gain-plus">+</span>17 711<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 212 532 ₽/год</span><span class="gain-label">ВЫГОДА ПО РАЗДЕЛУ</span></div><div class="gain-right"><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать<br>окупаемость<br>для своего склада</a></div></div></div>',
+    'Предотвращение потерь': '<div class="gain"><div class="gain-cols"><div class="gain-nums"><span class="gain-sum"><span class="gain-plus">+</span>5 000<span class="gain-unit"> ₽/мес</span></span><span class="gain-year">или 60 000 ₽/год</span><span class="gain-label">ВЫГОДА ПО РАЗДЕЛУ</span></div><div class="gain-right"><a class="gain-go" href="https://mastakey.ru/ms-calc-ru">рассчитать<br>окупаемость<br>для своего склада</a></div></div></div>'
     };
 
     место.innerHTML = блоки;
