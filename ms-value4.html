@@ -573,6 +573,11 @@ window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
     return String(с).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
+  /** Слова между звёздочками — жирным. Звёздочки убираются. */
+  function жирным(с) {
+    return экран(с).replace(/\*([^*\n]+)\*/g, '<b>$1</b>');
+  }
+
   function собрать(строки) {
     var разделы = [], поимени = {};
     for (var и = 1; и < строки.length; и++) {
@@ -610,8 +615,8 @@ window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
       var стиль = '--c:' + ц[0] + '; --soft:' + ц[1] + '; --pale:' + ц[2];
       кнопки += '<a class="tab" href="#s' + (и+1) + '" style="' + стиль + '">' + экран(р.имя) + '</a>';
       var пункты = р.карточки.map(function (к) {
-        var сп = к.строки.map(function (л) { return '<li>' + экран(л) + '</li>'; }).join('');
-        return '<li class="card"><h3>' + экран(к.заголовок) + '</h3>'
+        var сп = к.строки.map(function (л) { return '<li>' + жирным(л) + '</li>'; }).join('');
+        return '<li class="card"><h3>' + жирным(к.заголовок) + '</h3>'
              + '<ul class="card-list">' + сп + '</ul>'
              + '<span class="card-num">' + экран(к.номер) + '</span></li>';
       }).join('');
