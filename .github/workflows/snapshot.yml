@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: snapshot-cards
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   snapshot:
@@ -29,5 +29,13 @@ jobs:
           git config user.name "Снимок карточек"
           git config user.email "actions@github.com"
           git add ms-value4.html
-          git diff --staged --quiet || git commit -m "снимок карточек $(date -u +%d.%m.%Y' '%H:%M)"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "снимок карточек $(date -u +%d.%m.%Y' '%H:%M)"
+          # если нас опередил другой снимок — подтянуть и повторить, а не падать
+          for попытка in 1 2 3 4 5; do
+            git push && exit 0
+            git pull --rebase --autostash origin main || true
+            sleep $((попытка * 3))
+          done
+          echo "не удалось записать снимок после пяти попыток"
+          exit 1
