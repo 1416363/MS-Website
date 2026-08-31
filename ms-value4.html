@@ -246,13 +246,24 @@ var МЕСТО = (function () {
 })();
 
 // Выбор калькулятора по стране посетителя.
+// Разделы приходят из таблицы позже, чем определяется страна, поэтому
+// подмена повторяется после каждой отрисовки.
+window.ПОПРАВИТЬ_КАЛЬКУЛЯТОР = function () {};
 (function () {
   var КАЗАХСТАН = ['kz', 'kaz', 'kazakhstan', 'казахстан', 'қазақстан'];
-  МЕСТО.когдаГотово(function (м) {
-    if (КАЗАХСТАН.indexOf(String(м.страна || '').trim().toLowerCase()) === -1) return;
+  var казахстан = false;
+
+  function подменить() {
+    if (!казахстан) return;
     [].slice.call(document.querySelectorAll('a[href*="ms-calc-ru"]')).forEach(function (к) {
       к.href = к.href.replace('ms-calc-ru', 'ms-calc-kz');
     });
+  }
+  window.ПОПРАВИТЬ_КАЛЬКУЛЯТОР = подменить;
+
+  МЕСТО.когдаГотово(function (м) {
+    казахстан = КАЗАХСТАН.indexOf(String(м.страна || '').trim().toLowerCase()) !== -1;
+    подменить();
   });
 })();
 
@@ -426,6 +437,7 @@ window.ОБНОВИТЬ_ВКЛАДКИ = (function () {
       }
     });
     вкладки.innerHTML = кнопки;
+    if (window.ПОПРАВИТЬ_КАЛЬКУЛЯТОР) window.ПОПРАВИТЬ_КАЛЬКУЛЯТОР();
   }
 
   try {
