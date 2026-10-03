@@ -274,6 +274,8 @@ body{background:#eeeeea;font-family:'Manrope','IBM Plex Sans',system-ui,sans-ser
 .sr-x[hidden]{display:none}
 mark.hl{background:#ffe066;color:inherit;border-radius:2px;padding:0 1px}
 .search-empty{padding:28px 14px;text-align:center;font:500 13px 'Manrope';color:rgba(0,0,0,.45)}
+
+.goal-up{text-transform:uppercase;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -3371,6 +3373,35 @@ render();
     hosts().forEach(apply);
     return r;
   };
+})();
+</script>
+<script>
+(function () {
+  const GOALS = Object.keys(window.GOAL_TINT || {});
+  const re = new RegExp("^(" + GOALS.map(g => g.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")( \\(.*\\))?$");
+  const chip = e => {
+    for (let x = e, i = 0; x && i < 2; x = x.parentElement, i++) {
+      const c = getComputedStyle(x);
+      if (c.backgroundColor !== "rgba(0, 0, 0, 0)" && parseFloat(c.borderTopLeftRadius) >= 5) return x;
+    }
+    return null;
+  };
+  function up(root) {
+    root.querySelectorAll("span, div").forEach(e => {
+      if (e.classList.contains("goal-up") || e.closest("#notify")) return;
+      const t = e.textContent.trim();
+      if (!re.test(t) || [...e.children].some(c => !c.classList.contains("hlw") && c.tagName !== "MARK")) return;
+      const host = e.closest("[title]") || chip(e);
+      if (host) e.classList.add("goal-up");
+    });
+  }
+  const base = window.render;
+  window.render = function () {
+    const r = base.apply(this, arguments);
+    up(document.getElementById("app"));
+    return r;
+  };
+  up(document.getElementById("app"));
 })();
 </script>
 <script>
