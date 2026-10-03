@@ -206,7 +206,7 @@ body{background:#eeeeea;font-family:'Manrope','IBM Plex Sans',system-ui,sans-ser
 #s-sales .kpi-card{flex:none;width:max-content;padding:12px 16px;background:#fff;border:1px solid transparent;box-shadow:0 6px 18px -8px rgba(0,0,0,.28);border-radius:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-direction:row;min-width:0;max-width:none;gap:16px;transform:none}
 #s-sales .kpi-title{font:600 10.5px/1.3 'Manrope','IBM Plex Sans';letter-spacing:.04em;text-transform:uppercase;color:rgba(0,0,0,.45);max-width:96px}
 #s-sales .kpi-card>div:last-child{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-#s-sales .kpi-value{font:600 20px/1 'JetBrains Mono','IBM Plex Mono';color:#16181c}
+#s-sales .kpi-value{font:600 26px/1 'JetBrains Mono','IBM Plex Mono';color:#16181c}   /* как в плитках остальных экранов */
 #s-sales .kpi-sub{font:500 11px 'Manrope','IBM Plex Sans';color:rgba(0,0,0,.4);margin-top:0}
 #s-sales .legend-item{font:500 12.5px 'Manrope','IBM Plex Sans';cursor:pointer}
 #s-sales .legend-item:hover{text-decoration:underline;text-underline-offset:3px}
@@ -269,6 +269,9 @@ body{background:#eeeeea;font-family:'Manrope','IBM Plex Sans',system-ui,sans-ser
 #notify-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:210;padding:10px 16px;border-radius:9px;background:#16181c;color:#fff;font:500 13px 'Manrope'}
 
 .sr-off{display:none!important}
+.sr-x{flex:none;width:18px;height:18px;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.08);color:rgba(0,0,0,.55);font:500 13px/1 'Manrope';cursor:pointer}
+.sr-x:hover{background:rgba(0,0,0,.14)}
+.sr-x[hidden]{display:none}
 mark.hl{background:#ffe066;color:inherit;border-radius:2px;padding:0 1px}
 .search-empty{padding:28px 14px;text-align:center;font:500 13px 'Manrope';color:rgba(0,0,0,.45)}
 </style>
@@ -3149,7 +3152,16 @@ render();
   const store = {};
   const norm = s => String(s || "").replace(/[\s  ]+/g, " ").toLowerCase();
   const isHead = r => /text-transform:\s*uppercase/.test(r.getAttribute("style") || "");
-  const gridRows = el => Array.from(el.querySelectorAll('div[style*="grid-template-columns"]')).filter(r => !isHead(r));
+  /* строки таблицы — сетки с самой частой раскладкой колонок: так в счёт не попадают одиночные сетки
+     вроде верхней сводки карточки */
+  const cols = r => ((r.getAttribute("style") || "").match(/grid-template-columns:\s*([^;]+)/) || [])[1] || "";
+  const gridRows = el => {
+    const all = Array.from(el.querySelectorAll('div[style*="grid-template-columns"]')).filter(r => !isHead(r));
+    const n = {};
+    all.forEach(r => { n[cols(r)] = (n[cols(r)] || 0) + 1; });
+    const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0];
+    return all.filter(r => cols(r) === top);
+  };
   const rowsOf = (host, scope) => host.id === "m-emp" ? Array.from(scope.querySelectorAll(".log-row")) : gridRows(scope);
   const keyOf = host => (host.id === "m-car" || host.id === "m-emp") ? host.id : host.id + ":" + (curCut(nav.screen) || "");
 
@@ -3163,7 +3175,7 @@ render();
   }
 
   function unmark(scope) {
-    scope.querySelectorAll("mark.hl").forEach(m => { m.replaceWith(document.createTextNode(m.textContent)); });
+    scope.querySelectorAll("span.hlw").forEach(w => { w.replaceWith(document.createTextNode(w.textContent)); });
     scope.normalize();
   }
 
@@ -3175,7 +3187,9 @@ render();
     hits.forEach(t => {
       const src = t.nodeValue, low = norm(src);
       if (low.length !== src.length) return;          /* схлопнутые пробелы — без подсветки, но строка найдена */
-      const frag = document.createDocumentFragment();
+      /* одна обёртка вместо нескольких узлов: в плашках (сетка, флекс) куски текста иначе разъезжаются по ячейкам */
+      const frag = document.createElement("span");
+      frag.className = "hlw";
       let i = 0, k;
       while ((k = low.indexOf(q, i)) >= 0) {
         if (k > i) frag.appendChild(document.createTextNode(src.slice(i, k)));
@@ -3203,11 +3217,25 @@ render();
     });
   }
 
+  /* крестик сброса — в поле, виден, пока что-то набрано */
+  function clearBtn(input) {
+    let x = input.parentElement.querySelector(".sr-x");
+    if (!x) {
+      x = document.createElement("span");
+      x.className = "sr-x";
+      x.title = "Сбросить поиск";
+      x.textContent = "×";
+      input.insertAdjacentElement("afterend", x);
+    }
+    x.hidden = !input.value;
+  }
+
   function apply(host) {
     const input = host.querySelector("input[data-search]");
     if (!input || !host.offsetWidth) return;
     const q = norm(store[keyOf(host)] || "").trim();
     if (input.value !== (store[keyOf(host)] || "")) input.value = store[keyOf(host)] || "";
+    clearBtn(input);
     const scope = scopeOf(input, host);
     unmark(scope);
     scope.querySelectorAll(".search-empty").forEach(e => e.remove());
@@ -3246,6 +3274,26 @@ render();
     store[keyOf(host)] = inp.value;
     apply(host);
   });
+
+  const reset = host => {
+    store[keyOf(host)] = "";
+    const inp = host.querySelector("input[data-search]");
+    if (inp) inp.value = "";
+    apply(host);
+  };
+  document.addEventListener("click", e => {
+    const x = e.target.closest(".sr-x");
+    if (!x) return;
+    const host = x.closest(".screen, #m-car, #m-emp");
+    reset(host);
+    host.querySelector("input[data-search]").focus();
+  });
+  document.addEventListener("keydown", e => {
+    const inp = e.target.closest && e.target.closest("input[data-search]");
+    if (!inp || e.key !== "Escape" || !inp.value) return;
+    e.stopPropagation();
+    reset(inp.closest(".screen, #m-car, #m-emp"));
+  }, true);
 
   const base = window.render;
   window.render = function () {
