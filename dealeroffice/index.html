@@ -3388,7 +3388,8 @@ render();
   };
   function up(root) {
     root.querySelectorAll("span, div").forEach(e => {
-      if (e.classList.contains("goal-up") || e.closest("#notify")) return;
+      /* крошки, меню и окно уведомления — не плашки целей, даже если слово совпадает («Предпродажка» — ещё и раздел) */
+      if (e.classList.contains("goal-up") || e.closest("#notify, #crumbs, #userwrap, .menu")) return;
       const t = e.textContent.trim();
       if (!re.test(t) || [...e.children].some(c => !c.classList.contains("hlw") && c.tagName !== "MARK")) return;
       const host = e.closest("[title]") || chip(e);
