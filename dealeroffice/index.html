@@ -727,19 +727,15 @@ mark.hl{background:#ffe066;color:inherit;border-radius:2px;padding:0 1px}
             
             <!-- Панель управления и фильтры -->
             <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px">
-                <div style="display:inline-flex; align-items:center; gap:12px; flex:none; white-space:nowrap; padding:5px 12px 5px 6px; background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:11px; box-shadow:0 1px 2px rgba(0,0,0,.05)">
-                    <div class="hover-bg" style="flex:none; display:flex; align-items:center; gap:9px; padding:5px 10px; border-radius:8px; cursor:pointer">
-                        <span style="font:700 17px/1.15 'Manrope'; letter-spacing:-.01em; color:#16181c">Все автомобили</span>
-                        <span style="font-size:11px; color:rgba(0,0,0,.45)">▾</span>
-                    </div>
-                    <div style="flex:none; width:1px; height:22px; background:rgba(0,0,0,.1)"></div>
+                <div style="display:flex;align-items:center;gap:10px;flex:none"><div style="display:flex;align-items:center;gap:8px;height:34px;padding:0 11px;border:1px solid rgba(0,0,0,.13);border-radius:8px;width:300px;flex:none;background:#fff"><div style="width:11px;height:11px;border:1.6px solid rgba(0,0,0,.35);border-radius:50%;flex:none"></div><input data-search placeholder="Поиск" style="border:0;outline:0;font:400 12.5px 'Manrope','IBM Plex Sans';color:#16181c;width:100%;background:transparent"></div><div style="display:inline-flex; align-items:center; gap:12px; flex:none; white-space:nowrap; padding:5px 12px 5px 6px; background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:11px; box-shadow:0 1px 2px rgba(0,0,0,.05)">
+                    
                     
                     <!-- Переключатель видов -->
                     <div class="tab-switch">
                         <div id="tab-kanban" class="tab-btn active" onclick="switchView('kanban')">Доска</div>
                         <div id="tab-analytics" class="tab-btn hover-bg" onclick="switchView('analytics')">Аналитика</div>
                     </div>
-                </div>
+                </div></div>
                 
                 <div style="display:flex; gap:8px; flex:none">
                     <div class="hover-bg" style="height:34px; padding:0 13px; display:grid; place-items:center; border:1px dashed rgba(0,0,0,.2); border-radius:8px; font:500 12.5px 'Manrope'; color:#2b2f36; cursor:pointer;">+ Фильтр</div>
@@ -3236,10 +3232,23 @@ render();
     const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0];
     return all.filter(r => cols(r) === top);
   };
-  const rowsOf = (host, scope) => host.id === "m-emp" ? Array.from(scope.querySelectorAll(".log-row")) : gridRows(scope);
+  /* Предпродажка: на доске ищем по карточкам, во вкладке «Аналитика» — по строкам этапов */
+  const prepView = host => Array.from(host.querySelectorAll("#view-kanban, #view-analytics")).find(v => v.offsetWidth);
+  const rowsOf = (host, scope) => {
+    if (host.id === "m-emp") return Array.from(scope.querySelectorAll(".log-row"));
+    if (host.id === "s-prep") {
+      const v = prepView(host);
+      if (!v) return [];
+      return v.id === "view-kanban"
+        ? Array.from(v.querySelectorAll('div.hover-bg[style*="border-radius:10px"]'))
+        : gridRows(v);
+    }
+    return gridRows(scope);
+  };
   const keyOf = host => (host.id === "m-car" || host.id === "m-emp") ? host.id : host.id + ":" + (curCut(nav.screen) || "");
 
   function scopeOf(input, host) {
+    if (host.id === "s-prep") return prepView(host) || host;
     let el = input;
     while (el && el !== host) {
       el = el.parentElement;
@@ -3331,6 +3340,16 @@ render();
       if (q && hit[i]) mark(r, q);
     });
     counters(host, shown, rows.filter(r => !sub(r)).length, !!q);
+    /* доска Предпродажки: число в шапке колонки — найденные карточки этапа */
+    if (host.id === "s-prep" && scope.id === "view-kanban") {
+      const cols = new Set(rows.map(r => r.parentElement.parentElement));
+      cols.forEach(col => {
+        const badge = Array.from(col.firstElementChild.querySelectorAll("*")).find(e => !e.children.length && /^\d+$/.test(e.getAttribute("data-count-orig") || e.textContent.trim()));
+        if (!badge) return;
+        if (!badge.hasAttribute("data-count-orig")) badge.setAttribute("data-count-orig", badge.textContent.trim());
+        badge.textContent = q ? rows.filter((r, i) => show[i] && r.parentElement.parentElement === col).length : badge.getAttribute("data-count-orig");
+      });
+    }
     if (q && !shown && rows.length) {
       const e = document.createElement("div");
       e.className = "search-empty";
@@ -3375,6 +3394,16 @@ render();
     hosts().forEach(apply);
     return r;
   };
+  /* переключение «Доска / Аналитика» — поиск применяется к открытой вкладке */
+  if (typeof window.switchView === "function") {
+    const sw = window.switchView;
+    window.switchView = function () {
+      const r = sw.apply(this, arguments);
+      const h = document.getElementById("s-prep");
+      setTimeout(() => apply(h), 0);
+      return r;
+    };
+  }
 })();
 </script>
 <script>
