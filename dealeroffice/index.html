@@ -103,6 +103,8 @@ body{background:#eeeeea;font-family:'Manrope','IBM Plex Sans',system-ui,sans-ser
 .js-tooltip::after{content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: #2b2f36;}
 #s-prep .dashed-link{border-bottom: 1px dashed rgba(216,76,63,.4); cursor: pointer; padding-bottom: 1px; color: #d84c3f;}
 #s-prep .dashed-link:hover{border-bottom-color: #d84c3f;}
+#s-prep .metric-card{border-color:transparent!important;box-shadow:0 6px 18px -8px rgba(0,0,0,.28)!important}
+
 /* --- собственные стили карточки сотрудника --- */
 #m-emp ::-webkit-scrollbar{width: 6px; height: 6px;}
 #m-emp ::-webkit-scrollbar-track{background: transparent;}
@@ -750,18 +752,18 @@ mark.hl{background:#ffe066;color:inherit;border-radius:2px;padding:0 1px}
                 
                 <div class="metric-card">
                     <div style="font:600 10.5px/1.3 'Manrope'; letter-spacing:.04em; text-transform:uppercase; color:rgba(0,0,0,.45);">В подготовке</div>
-                    <div style="font:600 24px/1 'JetBrains Mono'; color:#16181c; margin-top:-2px;">48</div>
+                    <div style="font:600 26px/1 'JetBrains Mono'; color:#16181c; margin-top:-2px;">48</div>
                 </div>
                 
                 <div class="metric-card">
                     <div style="font:600 10.5px/1.3 'Manrope'; letter-spacing:.04em; text-transform:uppercase; color:rgba(0,0,0,.45);">Просрочено</div>
-                    <div style="font:600 24px/1 'JetBrains Mono'; margin-top:-2px;" class="dashed-link" data-tooltip="BMW X5 ...44122 (Коромыслов И.)&#10;Mercedes GLC ...19920 (Павлов О.)&#10;Mazda CX-5 ...34221 (Петров А.)&#10;Mazda CX-7 ...75230 (Смирнов М.)&#10;Mercedes G63 ...76334 (Волков К.)&#10;Lexus NX ...02116 (Волков К.)&#10;Toyota RAV4 ...84412 (Волков К.)&#10;Audi Q5 ...22910 (Соколов Д.)&#10;Skoda Octavia ...11964 (Соколов Д.)&#10;Kia Sportage ...34992 (Сидоров Н.)">20%</div>
+                    <div style="font:600 26px/1 'JetBrains Mono'; margin-top:-2px;" class="dashed-link" data-tooltip="BMW X5 ...44122 (Коромыслов И.)&#10;Mercedes GLC ...19920 (Павлов О.)&#10;Mazda CX-5 ...34221 (Петров А.)&#10;Mazda CX-7 ...75230 (Смирнов М.)&#10;Mercedes G63 ...76334 (Волков К.)&#10;Lexus NX ...02116 (Волков К.)&#10;Toyota RAV4 ...84412 (Волков К.)&#10;Audi Q5 ...22910 (Соколов Д.)&#10;Skoda Octavia ...11964 (Соколов Д.)&#10;Kia Sportage ...34992 (Сидоров Н.)">20%</div>
                 </div>
                 
                 <div class="metric-card">
                     <div style="font:600 10.5px/1.3 'Manrope'; letter-spacing:.04em; text-transform:uppercase; color:rgba(0,0,0,.45);">Средний цикл<br>(TTM)</div>
                     <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
-                        <div style="font:600 24px/1 'JetBrains Mono'; color:#16181c; margin-top:-2px;">6,4д</div>
+                        <div style="font:600 26px/1 'JetBrains Mono'; color:#16181c; margin-top:-2px;">6,4д</div>
                         <div style="font:500 10.5px/1 'Manrope'; color:rgba(0,0,0,.45);">Норма: 5,0д</div>
                     </div>
                 </div>
@@ -775,7 +777,7 @@ mark.hl{background:#ffe066;color:inherit;border-radius:2px;padding:0 1px}
                             <div class="mini-tab active" onclick="setPeriod(this, 'month')">М</div>
                         </div>
                     </div>
-                    <div id="metric-done" style="font:600 24px/1 'JetBrains Mono'; color:#3b9a62; margin-top:-2px; transition: opacity 0.2s">68</div>
+                    <div id="metric-done" style="font:600 26px/1 'JetBrains Mono'; color:#3b9a62; margin-top:-2px; transition: opacity 0.2s">68</div>
                 </div>
 
                 <div class="metric-card">
