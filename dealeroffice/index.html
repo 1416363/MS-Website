@@ -2980,6 +2980,22 @@ class Component extends DCLogic {
   Component.prototype.renderVals = function () {
     const V = base.call(this);
     if (V.idleRows) V.idleRows = V.idleRows.map(r => Object.assign({}, r, { showPct: pct(r.noShowD, 14), servPct: pct(r.noServiceD, 21) }));
+    /* Круг двух цветов (29.10.2026): в норме — тёмный, сверх нормы — красный.
+       Коричневый «на подходе к норме» («Ключи на руках» 48–72 ч, «Бездействие») становится тёмным,
+       коричневый «немного сверх нормы» (Метки, Цели, карточка) — красным; зелёный — тёмным. */
+    const RED = "#c0442f", AMBER = "#a1701a", GREEN = "#2f7d5b", DARK = "#16181c";
+    const two = (list, key, amberTo) => list && list.map(o => {
+      const v = o[key], n = v === AMBER ? amberTo : v === GREEN ? DARK : v;
+      const q = n === v ? o : Object.assign({}, o, { [key]: n });
+      return q.subs ? Object.assign({}, q, { subs: two(q.subs, key, amberTo) }) : q;
+    });
+    V.rows = two(V.rows, "riskInk", DARK);
+    V.bindRows = two(V.bindRows, "ink", RED);
+    V.archRows = two(V.archRows, "ink", RED);
+    V.idleRows = two(two(V.idleRows, "showInk", "rgba(0,0,0,.6)"), "servInk", "rgba(0,0,0,.6)");
+    V.agg = two(V.agg, "ink", RED);
+    V.pathRows = two(V.pathRows, "ink", RED);
+    V.cardGoalRows = two(V.cardGoalRows, "ink", RED);
     if (V.agg) V.agg = V.agg.map(a => Object.assign({}, a, { overInk: "rgba(0,0,0,.5)" },
       a.subs ? { subs: a.subs.map(z => Object.assign({}, z, { overInk: z.over === "—" ? z.overInk : "rgba(0,0,0,.6)" })) } : {}));
     return V;
