@@ -3768,5 +3768,80 @@ render();
   };
 })();
 </script>
+<script>
+/* Живые «Ключи на руках» — Пелетон-44: данные посредника на мини-ПК вместо примера. */
+(function () {
+  var API = "https://keys.mastakey.netcraze.pro/keys?room=26";
+  var WD = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  var ST = { active: ["В работе", "#e9f3ee", "#2f7d5b"], archived: ["Архив", "#f1f1ee", "rgba(0,0,0,.55)"] };
+  var live = [];
+
+  /* экран: без плиток сводки, со столбцом «Статус» после «Автомобиля» */
+  var tpl = D.templates.keys;
+  var a = tpl.indexOf('<div style="display:flex;flex-wrap:wrap;gap:10px">');
+  var b = tpl.indexOf('<div style="display:flex;gap:8px;flex:none;margin-left:auto">', a);
+  if (a >= 0 && b > a) tpl = tpl.slice(0, a) + '<div style="display:flex;flex-wrap:wrap;gap:10px"></div>' + tpl.slice(b);
+  tpl = tpl.split("33px 176px 152px 86px 167px 129px 150px 71px minmax(42px,1fr)")
+    .join("33px 176px 152px 86px 167px 104px 129px 150px 71px minmax(42px,1fr)");
+  tpl = tpl.replace("<div>Автомобиль</div>", "<div>Автомобиль</div>\n        <div>Статус</div>");
+  var tail = "{{ r.vinTail }}</span></div>\n            </div>\n";
+  tpl = tpl.replace(tail, tail + '\n            <div style="min-width:0"><span style="display:inline-grid;height:25px;padding:0 12px;place-items:center;border-radius:6px;background:{{ r.stBg }};font:500 12px \'Manrope\',\'IBM Plex Sans\';color:{{ r.stInk }};white-space:nowrap">{{ r.stLabel }}</span></div>\n');
+  /* цель взятия — заглавными у всех строк, а не только у целей из примера */
+  tpl = tpl.replace('<span style="display:inline-grid;height:25px;padding:0 12px;place-items:center;border-radius:6px;background:{{ r.purposeBg }}',
+    '<span class="goal-up" style="display:inline-grid;height:25px;padding:0 12px;place-items:center;border-radius:6px;background:{{ r.purposeBg }}');
+  D.templates.keys = tpl;
+
+  var base = Component.prototype.renderVals;
+  Component.prototype.renderVals = function () {
+    var V = base.call(this);
+    if (V.rows) V.rows = V.rows.map(function (r) {
+      var s = ST[(live[r.id] || {}).status] || ST.active;
+      return Object.assign({}, r, { stLabel: s[0], stBg: s[1], stInk: s[2] });
+    });
+    return V;
+  };
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function name(s) {
+    return String(s || "—").split(" ").map(function (w) {
+      return w === w.toUpperCase() && w.length > 2 ? w.charAt(0) + w.slice(1).toLowerCase() : w;
+    }).join(" ");
+  }
+  function phone(p) {
+    var d = String(p || "").replace(/\D/g, "");
+    if (d.length === 11 && (d[0] === "8" || d[0] === "7")) d = d.slice(1);
+    return d.length === 10 ? "+7 " + d.slice(0, 3) + " " + d.slice(3, 6) + " " + d.slice(6) : String(p || "");
+  }
+  function spaced(n) { return n == null ? "—" : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+
+  function apply(rows) {
+    live = rows;
+    RAW.length = 0; GOAL_RAW.length = 0;
+    rows.forEach(function (r) {
+      var t = new Date(r.takeTime), who = name(r.holder), ph = phone(r.phone);
+      if (r.role) window.STAFF_BOOK[who] = [r.role, ph];
+      RAW.push([who, ph, pad(t.getHours()) + ":" + pad(t.getMinutes()),
+        WD[t.getDay()] + ", " + pad(t.getDate()) + "." + pad(t.getMonth() + 1) + "." + t.getFullYear(),
+        +((Date.now() - r.takeTime) / 3600000).toFixed(2), String(r.vin || ""),
+        (name(r.mark) + " " + (r.model || "")).trim(), r.keyMark || "—", r.keyNumber || "—", spaced(r.run), "—"]);
+      GOAL_RAW.push(r.reason || "—");
+    });
+    render();
+  }
+
+  function load() {
+    fetch(API, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function (d) {
+      apply(d.rows.slice().sort(function (x, y) { return x.takeTime - y.takeTime; }));
+    }).catch(function () {});
+  }
+
+  apply([]);
+  load();
+  setInterval(load, 60000);
+})();
+</script>
 </body>
 </html>
