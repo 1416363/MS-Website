@@ -3775,6 +3775,13 @@ render();
   var WD = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   var ST = { active: ["В работе", "#e9f3ee", "#2f7d5b"], archived: ["Архив", "#f1f1ee", "rgba(0,0,0,.55)"] };
   var live = [];
+  var colf = { status: {}, goal: {} };  /* отбор по столбцам «Статус» и «Цель взятия» */
+
+  function colHead(id, title) {
+    return '<div data-colf="' + id + '" style="cursor:pointer;user-select:none;color:{{ colf_' + id + '_ink }}">' + title +
+      '{{ colf_' + id + '_mark }} <span style="font-size:9px">▾</span></div>';
+  }
+  function picked(id) { return Object.keys(colf[id]).filter(function (k) { return colf[id][k]; }); }
 
   /* экран: без плиток сводки, со столбцом «Статус» после «Автомобиля» */
   var tpl = D.templates.keys;
@@ -3783,7 +3790,8 @@ render();
   if (a >= 0 && b > a) tpl = tpl.slice(0, a) + '<div style="display:flex;flex-wrap:wrap;gap:10px"></div>' + tpl.slice(b);
   tpl = tpl.split("33px 176px 152px 86px 167px 129px 150px 71px minmax(42px,1fr)")
     .join("33px 176px 152px 86px 167px 104px 129px 150px 71px minmax(42px,1fr)");
-  tpl = tpl.replace("<div>Автомобиль</div>", "<div>Автомобиль</div>\n        <div>Статус</div>");
+  tpl = tpl.replace("<div>Автомобиль</div>", "<div>Автомобиль</div>\n        " + colHead("status", "Статус"));
+  tpl = tpl.replace("<div>Цель взятия</div>", colHead("goal", "Цель взятия"));
   var tail = "{{ r.vinTail }}</span></div>\n            </div>\n";
   tpl = tpl.replace(tail, tail + '\n            <div style="min-width:0"><span style="display:inline-grid;height:25px;padding:0 12px;place-items:center;border-radius:6px;background:{{ r.stBg }};font:500 12px \'Manrope\',\'IBM Plex Sans\';color:{{ r.stInk }};white-space:nowrap">{{ r.stLabel }}</span></div>\n');
   /* цель взятия — заглавными у всех строк, а не только у целей из примера */
@@ -3794,10 +3802,25 @@ render();
   var base = Component.prototype.renderVals;
   Component.prototype.renderVals = function () {
     var V = base.call(this);
-    if (V.rows) V.rows = V.rows.map(function (r) {
-      var s = ST[(live[r.id] || {}).status] || ST.active;
-      return Object.assign({}, r, { stLabel: s[0], stBg: s[1], stInk: s[2] });
-    });
+    if (V.rows) {
+      var ps = picked("status"), pg = picked("goal");
+      V.rows = V.rows.map(function (r) {
+        var s = ST[(live[r.id] || {}).status] || ST.active;
+        return Object.assign({}, r, { stLabel: s[0], stBg: s[1], stInk: s[2] });
+      }).filter(function (r) {
+        return (!ps.length || ps.indexOf(r.stLabel) >= 0) && (!pg.length || pg.indexOf(r.purpose) >= 0);
+      });
+      if (ps.length || pg.length) {
+        V.countLabel = V.rows.length + " из " + RAW.length;
+        V.pageLabel = "1–" + V.rows.length + " из " + V.rows.length;
+        V.empty = V.rows.length === 0;
+      }
+      ["status", "goal"].forEach(function (id) {
+        var n = picked(id).length;
+        V["colf_" + id + "_ink"] = n ? "#22409c" : "inherit";
+        V["colf_" + id + "_mark"] = n ? " · " + n : "";
+      });
+    }
     return V;
   };
 
@@ -3837,6 +3860,51 @@ render();
       apply(d.rows.slice().sort(function (x, y) { return x.takeTime - y.takeTime; }));
     }).catch(function () {});
   }
+
+  /* выпадающий список отбора под заголовком столбца */
+  var menu = document.createElement("div");
+  menu.hidden = true;
+  menu.style.cssText = "position:fixed;z-index:300;min-width:200px;max-height:60vh;overflow:auto;padding:8px;background:#fff;" +
+    "border:1px solid rgba(0,0,0,.1);border-radius:10px;box-shadow:0 12px 32px -12px rgba(0,0,0,.3);font:500 12.5px 'Manrope','IBM Plex Sans',sans-serif;color:#16181c";
+  document.body.appendChild(menu);
+  var menuFor = null;
+
+  function values(id) {
+    if (id === "status") return [ST.active[0], ST.archived[0]];
+    var seen = {};
+    GOAL_RAW.forEach(function (g) { seen[g] = 1; });
+    return Object.keys(seen).sort();
+  }
+  function openMenu(id, el) {
+    menuFor = id;
+    menu.innerHTML = values(id).map(function (v) {
+      return '<label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;white-space:nowrap">' +
+        '<input type="checkbox" data-v="' + v.replace(/"/g, "&quot;") + '"' + (colf[id][v] ? " checked" : "") + ' style="margin:0;accent-color:#3562d6">' + v + '</label>';
+    }).join("") + '<div data-reset style="margin:6px 8px 2px;color:#3562d6;cursor:pointer">Сбросить</div>';
+    var b = el.getBoundingClientRect();
+    menu.style.left = Math.min(b.left, window.innerWidth - 220) + "px";
+    menu.style.top = (b.bottom + 6) + "px";
+    menu.hidden = false;
+  }
+  document.addEventListener("click", function (e) {
+    var head = e.target.closest("[data-colf]");
+    if (head) {
+      e.stopPropagation();
+      var id = head.getAttribute("data-colf");
+      if (!menu.hidden && menuFor === id) menu.hidden = true; else openMenu(id, head);
+      return;
+    }
+    if (menu.contains(e.target)) {
+      e.stopPropagation();
+      if (e.target.hasAttribute("data-reset")) { colf[menuFor] = {}; openMenu(menuFor, document.querySelector('[data-colf="' + menuFor + '"]')); render(); }
+      return;
+    }
+    menu.hidden = true;
+  }, true);
+  menu.addEventListener("change", function (e) {
+    var v = e.target.getAttribute("data-v");
+    if (v != null) { colf[menuFor][v] = e.target.checked; render(); }
+  });
 
   apply([]);
   load();
