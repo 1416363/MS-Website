@@ -334,8 +334,7 @@ mark.hl{background:#ffe066;color:inherit;border-radius:2px;padding:0 1px}
     <div style="width:36px;height:36px;border-radius:9px;background:rgba(53,98,214,.22);display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:11px"><div style="width:3px;height:8px;background:#7ea2ff"></div><div style="width:3px;height:13px;background:#7ea2ff"></div><div style="width:3px;height:5px;background:#7ea2ff"></div></div>
     <div style="width:36px;height:36px;border-radius:9px;display:grid;place-items:center"><div style="width:16px;height:12px;border:1.6px solid rgba(255,255,255,.42);border-radius:2px"></div></div>
     <div style="width:36px;height:36px;border-radius:9px;display:grid;place-items:center"><div style="width:13px;height:13px;border:1.6px solid rgba(255,255,255,.42);border-radius:3px;transform:rotate(45deg)"></div></div>
-    <div style="margin-top:auto;width:30px;height:30px;border-radius:50%;background:#2a2e35;color:rgba(255,255,255,.7);display:grid;place-items:center;font:600 10px 'JetBrains Mono','IBM Plex Mono'">РН</div>
-  </div>
+      </div>
   <div class="main">
     <div class="topbar">
       <div class="crumbs" id="crumbs"></div>
@@ -2779,7 +2778,7 @@ function menuHtml(cap, items, kind, current) {
 
 function renderCrumbs() {
   const inReports = nav.section === "reports";
-  /* «МегаДилер» — справа, у пользователя: «МегаДилер / Рукавишников Н.» (29.10.2026) */
+  /* справа — имя дилера «Пелетон-44»; пользователя нет, пока нет входа (30.10.2026) */
   let h = '';
 
   const secOpen = nav.menu === "section";
@@ -2813,15 +2812,7 @@ function renderCrumbs() {
 
   const uOpen = nav.menu === "user";
   document.getElementById("userwrap").innerHTML =
-    '<div class="crumb">МегаДилер</div><span class="sep">/</span>'
-    + '<div class="userchip' + (uOpen ? " open" : "") + '" data-menu="user">'
-    + '<span class="av">' + USER.initials + "</span>"
-    + '<span class="nm">' + USER.name + "</span>"
-    + '<span class="caret">▾</span></div>'
-    + (uOpen ? menuHtml("", [
-        { label: "Комнаты", sub: "все" }, { label: "Настройки" },
-        { label: "Уведомления" }, { label: "Выйти", exit: true }
-      ], "user", null) : "");
+    '<div class="crumb">Пелетон-44</div>';
 }
 
 function render() {
